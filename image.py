@@ -13,13 +13,6 @@ class sc_Image
     	self.dimensions = dimensions
     	self.pixels = pixels
 
-    #loop through the pixels and set all of their energy values
-    def calculate_energies(self, algorithm) :
-    	for h in range(height):
-			for w in range(width):
-				pixels[(w,h)].energy = get_energy((w,h), algorithm)
-
-
     # get the neighbors of the pixel at pos for e1 function
     def get_neighbors (self, pos):
     	raise NotImplementedError
@@ -34,7 +27,7 @@ class sc_Image
     	else:
     		return None
 
-    # sets the energies
+    # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm) :
 		if algorithm == 'e1':
 			map (lambda p: e1 (p, self.get_neighbors(p) ), self.pixels.values ) 
@@ -51,14 +44,16 @@ class sc_Image
 	# pixel at the top edge of the image and finds the lowest.
 	def get_next_seam (self, alg = 'dyn', orientation = 'horizontal') :
 
-		if orientation ='vertical' : 
+		#get all of the starting pixels
+		if orientation ='horizontal' : 
 			pixels = map (self.get_pixel, [(0,h) for h in range(self.height)] )
-		elif orientation = 'horizontal'
+		elif orientation = 'vertical'
 			pixels = map (self.get_pixel, [(w,0) for w in range(self.width)] )
 		else:
 			raise Exception("Orientation must be vertical or horizontal" )
 
-		#create a list of seam objects
+		#create a list of seam objects representing the lowest seam originating
+		#from each starting pixel
 		if alg= 'dijk': 
 			seams = map (seam_dijk, self.pixels)
 		elif alg = 'dyn' :
@@ -71,7 +66,7 @@ class sc_Image
 		return seam
 
 	#write a jpeg representation of this image to a file
-	def to_jpeg(self, filepath):
+	def to_jpeg (self, filepath):
 		raise NotImplementedError
 
 	#removes a seam from the image
