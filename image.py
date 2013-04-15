@@ -1,4 +1,7 @@
+from energy import e1, entropy
+
 import Image
+
 
 
 #representation of image for seam carving
@@ -11,7 +14,7 @@ class sc_Image
     	self.seams = []
 
     #loop through the pixels and set all of their energy values
-    def set_energies(self, algorithm) :
+    def calculate_energies(self, algorithm) :
     	for h in range(height):
 			for w in range(width):
 				pixels[(w,h)].energy = get_energy((w,h), algorithm)
@@ -19,6 +22,10 @@ class sc_Image
 
     # get the neighbors of the pixel at pos
     def get_neighbors (self, pos):
+    	raise NotImplementedError
+
+    # gets the 9x9 square of pixels of the pixel at pos
+    def get_square (self, pos):
     	raise NotImplementedError
 
     def get_pixel(self, pos):
@@ -30,13 +37,14 @@ class sc_Image
     # gets the energy of the pixel at a position
     def get_energy (self, pos, algorithm) :
 		if algorithm == 'e1':
-			raise NotImplementedError
+			map (lambda x: e1 (x, get_neighbors(x) ), self.pixels.values ) 
 
-		elif algorithm == 'e2':
-			raise NotImplementedError
+		elif algorithm == 'entropy':
+			map (lambda x: entropy (x,  get_square(x) ), self.pixels.values ) 
 
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)
+
 
 	#write a jpeg representation of this image to a file
 	def to_jpeg(self, filepath):
