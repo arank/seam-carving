@@ -34,8 +34,8 @@ class sc_Image
     	else:
     		return None
 
-    # gets the energy of the pixel at a position
-    def get_energy (self, pos, algorithm) :
+    # sets the energies
+    def set_energies (self, algorithm) :
 		if algorithm == 'e1':
 			map (lambda p: e1 (p, self.get_neighbors(p) ), self.pixels.values ) 
 
