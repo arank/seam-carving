@@ -66,22 +66,26 @@ class sc_Image
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)
 
+		return seam
 
-		#write a jpeg representation of this image to a file
-		def to_jpeg(self, filepath):
-			raise NotImplementedError
+	#write a jpeg representation of this image to a file
+	def to_jpeg(self, filepath):
+		raise NotImplementedError
 
 	#removes a seam from the image
 	def remove_seam (self, seam) :
 		raise NotImplementedError
 
-	#
+	# need to do more research on how this algorithm works
 	def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
 		raise NotImplementedError
 
-	#
+
+	# shrinks a picture by continouslly removing the lowest energy seem
 	def shrink (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
-		raise NotImplementedError
+		for i in range(new_pixels) :
+			self.set_energies(energy)
+			self.remove_seam(self.get_next_seam(seam, orientation))
 
 class Pixel:
     def __init__(self, pos, rgb): 
