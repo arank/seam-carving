@@ -66,6 +66,8 @@ class sc_Image
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)
 
+		seam = reduce ((lambda a,b : if a<b: return a; else: return b), seams)
+
 		return seam
 
 	#write a jpeg representation of this image to a file
@@ -76,7 +78,7 @@ class sc_Image
 	def remove_seam (self, seam) :
 		raise NotImplementedError
 
-	# need to do more research on how this algorithm works
+	#calculate the lowest energy seams then add duplicates of them to the picture
 	def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
 		raise NotImplementedError
 
