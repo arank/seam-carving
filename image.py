@@ -6,7 +6,7 @@ import Image
 
 
 #representation of an image for seam carving
-class sc_Image
+class sc_Image:
     def __init__(self, dimensions, pixels): 
     	self.width = dimensions[0]
     	self.height = dimensions[1]
@@ -29,6 +29,8 @@ class sc_Image
 
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm) :
+
+    	#map the energy calculating function to the pixel objects
 		if algorithm == 'e1':
 			map (lambda p: e1 (p, self.get_neighbors(p) ), self.pixels.values ) 
 
@@ -42,21 +44,21 @@ class sc_Image
 	# pixel at the left edge of the image and finds the lowest.
 	# If resize is horizontal, then calls seam_for_start_hor on every
 	# pixel at the top edge of the image and finds the lowest.
-	def get_next_seam (self, alg = 'dyn', orientation = 'horizontal') :
+	def get_next_seam (self, alg = 'dyn', orientation = 'vertical') :
 
 		#get all of the starting pixels
-		if orientation ='horizontal' : 
+		if orientation =='horizontal' : 
 			pixels = map (self.get_pixel, [(0,h) for h in range(self.height)] )
-		elif orientation = 'vertical'
+		elif orientation == 'vertical'
 			pixels = map (self.get_pixel, [(w,0) for w in range(self.width)] )
 		else:
 			raise Exception("Orientation must be vertical or horizontal" )
 
 		#create a list of seam objects representing the lowest seam originating
 		#from each starting pixel
-		if alg= 'dijk': 
+		if alg == 'dijk': 
 			seams = map (seam_dijk, self.pixels)
-		elif alg = 'dyn' :
+		elif alg == 'dyn' :
 			seams = map (seam_dyn, self.pixels)
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)

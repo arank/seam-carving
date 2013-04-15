@@ -1,5 +1,5 @@
 class Seam :
-	def__init__(self, pixels) :
+	def __init__ (self, pixels) :
 		self.pixels = pixels
 		self.energy = energy
 		self.removed = false
