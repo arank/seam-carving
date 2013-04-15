@@ -1,17 +1,17 @@
 from energy import e1, entropy
+from seams import Seam, seam_dijk, seam_dyn
 
 import Image
 
 
 
-#representation of image for seam carving
+#representation of an image for seam carving
 class sc_Image
     def __init__(self, dimensions, pixels): 
     	self.width = dimensions[0]
     	self.height = dimensions[1]
     	self.dimensions = dimensions
     	self.pixels = pixels
-    	self.seams = []
 
     #loop through the pixels and set all of their energy values
     def calculate_energies(self, algorithm) :
@@ -20,11 +20,11 @@ class sc_Image
 				pixels[(w,h)].energy = get_energy((w,h), algorithm)
 
 
-    # get the neighbors of the pixel at pos
+    # get the neighbors of the pixel at pos for e1 function
     def get_neighbors (self, pos):
     	raise NotImplementedError
 
-    # gets the 9x9 square of pixels of the pixel at pos
+    # gets the 9x9 square of pixels of the pixel at pos for entropy function
     def get_square (self, pos):
     	raise NotImplementedError
 
@@ -37,17 +37,50 @@ class sc_Image
     # gets the energy of the pixel at a position
     def get_energy (self, pos, algorithm) :
 		if algorithm == 'e1':
-			map (lambda x: e1 (x, get_neighbors(x) ), self.pixels.values ) 
+			map (lambda p: e1 (p, self.get_neighbors(p) ), self.pixels.values ) 
 
 		elif algorithm == 'entropy':
-			map (lambda x: entropy (x,  get_square(x) ), self.pixels.values ) 
+			map (lambda p: entropy (p,  self.get_square(p) ), self.pixels.values ) 
 
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)
 
+	# If resize is vertical, then calls seam_for_start_vert on every 
+	# pixel at the left edge of the image and finds the lowest.
+	# If resize is horizontal, then calls seam_for_start_hor on every
+	# pixel at the top edge of the image and finds the lowest.
+	def get_next_seam (self, alg = 'dyn', orientation = 'horizontal') :
 
-	#write a jpeg representation of this image to a file
-	def to_jpeg(self, filepath):
+		if orientation ='vertical' : 
+			pixels = map (self.get_pixel, [(0,h) for h in range(self.height)] )
+		elif orientation = 'horizontal'
+			pixels = map (self.get_pixel, [(w,0) for w in range(self..width)] )
+		else:
+			raise Exception("Orientation must be vertical or horizontal" )
+
+		#create a list of seam objects
+		if alg= 'dijk': 
+			seams = map (seam_dijk, self.pixels)
+		elif alg = 'dynamic' :
+			seams = map (seam_dyn, self.pixels)
+		else:
+			raise Exception("%s is not one of the implemented algorithms" % algorithm)
+
+
+		#write a jpeg representation of this image to a file
+		def to_jpeg(self, filepath):
+			raise NotImplementedError
+
+	#removes a seam from the image
+	def remove_seam (self, seam) :
+		raise NotImplementedError
+
+	#
+	def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
+		raise NotImplementedError
+
+	#
+	def shrink (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
 		raise NotImplementedError
 
 class Pixel:
