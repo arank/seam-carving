@@ -54,14 +54,14 @@ class sc_Image
 		if orientation ='vertical' : 
 			pixels = map (self.get_pixel, [(0,h) for h in range(self.height)] )
 		elif orientation = 'horizontal'
-			pixels = map (self.get_pixel, [(w,0) for w in range(self..width)] )
+			pixels = map (self.get_pixel, [(w,0) for w in range(self.width)] )
 		else:
 			raise Exception("Orientation must be vertical or horizontal" )
 
 		#create a list of seam objects
 		if alg= 'dijk': 
 			seams = map (seam_dijk, self.pixels)
-		elif alg = 'dynamic' :
+		elif alg = 'dyn' :
 			seams = map (seam_dyn, self.pixels)
 		else:
 			raise Exception("%s is not one of the implemented algorithms" % algorithm)
