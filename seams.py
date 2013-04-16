@@ -56,7 +56,7 @@ class Edge :
 
 		self.source = source
 		self.sink = sink
-		self.weight = self.sink.energy
+		self.weight = weight
 
 
 def seam_dijk (image, dir) :
