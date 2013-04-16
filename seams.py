@@ -1,10 +1,21 @@
+import heapq
+
 class Seam :
 	def __init__ (self, pixels) :
 		self.pixels = pixels
 		self.energy = energy
 		self.removed = false
 
+class TestHeap :
+	def __init__(self):
 
+        self.h = heapq.heapify([])
+
+	def add (self, edge) :
+		heapq.heappush(self.h, edge)
+
+    def get_top (self) :
+    	return (heapq.heappop(self.h))
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 class Heap :
@@ -61,7 +72,7 @@ class Edge :
 
 def seam_dijk (image, dir) :
 	super_source = None
-	heap = Heap ()
+	heap = TestHeap ()
 	def get_path(edge, path) :
 		path.prepend(edge.sink)
 		if edge.source == super_source :
