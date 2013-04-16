@@ -14,7 +14,7 @@ class Heap :
 	def add (edge):
 
 	#gets top value, and removes it from heap, fixing heap afterwards
-    def get_top :
+    def get_top () :
 
 
 class Edge :
@@ -22,15 +22,42 @@ class Edge :
 
 
 def seam_dijk (image, dir) :
-	source = (-1,0)
-	sink = (0,-1)
-	heap = new Heap()
-	for pix in get_top():
-		heap.add(new Edge(source, pix.pos, pix.energy))
+	super_source = None
 
-	heap.get_top
-		
-	return seam
+	def get_path(edge, path) :
+		path.append(edge.sink)
+		if edge.source == super_source :
+			return path
+		else :
+			get_path(edge.source, path)
+
+	for pix in image.top_vert_row(): #also do top horz rowm
+		heap.add(Edge(super_source, pix, pix.energy))
+
+	while True :
+		edge = heap.get_top()
+
+		if edge.sink.y == (image.height-1) :
+			return get_path(edge,[])
+
+		down =image.pixels[ (edge.sink.x, (edge.sink.y+1)) ]
+		heap.add(Edge(edge, down, down.energy+edge.weight))
+
+		if edge.sink.x == (image.width-1) :
+			left = image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ]
+			heap.add(Edge(edge, left, left.energy+edge.weight))
+
+		elif edge.sink.x == 0 :
+			right = image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ]
+			heap.add(Edge(edge, right, right.energy+edge.weight))	
+		else :
+			left = image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ]
+			right = image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ]
+			heap.add(Edge(edge, right, right.energy+edge.weight))	
+			heap.add(Edge(edge, left, left.energy+edge.weight))	
+
+
+
 
 # calculates the lowest seam starting at a given pixel with dynamic programming
 #helper methods may be added later
