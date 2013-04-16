@@ -61,7 +61,7 @@ class Edge :
 
 def seam_dijk (image, dir) :
 	super_source = None
-
+	heap = Heap ()
 	def get_path(edge, path) :
 		path.prepend(edge.sink)
 		if edge.source == super_source :
