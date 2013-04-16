@@ -25,7 +25,7 @@ def seam_dijk (image, dir) :
 	super_source = None
 
 	def get_path(edge, path) :
-		path.append(edge.sink)
+		path.prepend(edge.sink)
 		if edge.source == super_source :
 			return path
 		else :
@@ -38,7 +38,7 @@ def seam_dijk (image, dir) :
 		edge = heap.get_top()
 
 		if edge.sink.y == (image.height-1) :
-			return get_path(edge,[])
+			return (get_path(edge,[]))
 
 		down =image.pixels[ (edge.sink.x, (edge.sink.y+1)) ]
 		heap.add(Edge(edge, down, down.energy+edge.weight))
