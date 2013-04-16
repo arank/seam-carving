@@ -8,17 +8,55 @@ class Seam :
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 class Heap :
-	def __init__():
 
-	#adds edge to heap and fixes it
-	def add (edge):
+	def __init__(self):
 
-	#gets top value, and removes it from heap, fixing heap afterwards
-    def get_top () :
+        self.list = []
 
+    def get_children(self, p) :
+    	if p*2+1 > len(self.list) :
+    		return []
+    	elif p*2+1 = (len(self.list) - 1) :
+    		return [p*2+1]
+    	else :
+    		return [p*2+1, p*2+2]
+
+    def switch(self, p1, p2) :
+    	t = self.list[p1]
+    	self.list[p1] = self.list[p2]
+    	self.list[p2] = t
+
+    def b_up(self, p) :
+    	if self.list[int(p/2)].weight < self.list[p].weight :
+    		self.switch(int(p/2),p)
+    		b_up(int(p/2))
+
+    def b_down(self, p) :
+    	let c = self.list[p].get_children
+    	if len(c) = 1 :
+    		if self.list[p].weight > c[0].weight :
+    			self.switch(p,c[0])
+    	elif len(self.list[p].get_children) = 2 :
+    		if self.list[p].weight > c[0].weight :
+    			self.switch(p,c[0])
+    		elif self.list[p].weight > c[1].weight :
+    			self.switch(p,c[1])
+
+	def add (self, edge) :
+		self.list.append(edge)
+		self.b_up (len(self.list)-1)
+
+    def get_top (self) :
+    	val = self.list.pop(0)
+    	self.b_down (0)
+    	return val
 
 class Edge :
-	def __init__(source, sink, weight):
+	def __init__(self, source, sink, weight):
+
+		self.source = source
+		self.sink = sink
+		self.weight = self.sink.energy
 
 
 def seam_dijk (image, dir) :
