@@ -7,8 +7,29 @@ class Seam :
 
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
-def seam_dijk (image, pixel, dir) :
-	raise NotImplementedError
+class Heap :
+	def __init__():
+
+	#adds edge to heap and fixes it
+	def add (edge):
+
+	#gets top value, and removes it from heap, fixing heap afterwards
+    def get_top :
+
+
+class Edge :
+	def __init__(source, sink, weight):
+
+
+def seam_dijk (image, dir) :
+	source = (-1,0)
+	sink = (0,-1)
+	heap = new Heap()
+	for pix in get_top():
+		heap.add(new Edge(source, pix.pos, pix.energy))
+
+	heap.get_top
+		
 	return seam
 
 # calculates the lowest seam starting at a given pixel with dynamic programming
@@ -29,7 +50,7 @@ def seam_dyn (image, pixel, dir) :
 	# 	for l in range(row_length):
 	# 		if dir == 'vert' : pos = (0,l) 
 	# 		else : pos = (l,0)
-	# 		testseam = seam_dijk(image, get_pixel(pos))
+	# 		testseam = s9oeam_dijk(image, get_pixel(pos))
 	# 		if testseam.energy < lowest.energy :
 	# 			lowest = testseam
 	# else :
