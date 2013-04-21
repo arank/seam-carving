@@ -1,6 +1,6 @@
 import image
 
-im = image.from_image("castle.jpg")
+im = image.sc_Image.from_filepath("castle.jpg")
 
 # image.shrink( 'horizontal', 300 , 'e1', 'dyn')
 

@@ -10,8 +10,22 @@ class sc_Image:
     def __init__(self, dimensions, pixels): 
         self.width = dimensions[0]
         self.height = dimensions[1]
-        self.dimensions = dimensions
         self.pixels = pixels
+
+
+    
+    @classmethod
+    def from_filepath(cls, filepath):
+        """ Given an image file turns into an sc_Image class.
+        eventually replace the im.getpixels calls with an im.getdata for performance reasons
+        """
+        pixels = {}
+        im = Image.open (filepath)
+        width, height = im.size
+        for h in range(height):
+            for w in range(width):
+                pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
+        return cls ((width, height), pixels)
 
     # get the neighbors of the pixel at pos for e1 function
     def get_neighbors (self, pos):
@@ -78,7 +92,7 @@ class sc_Image:
                 data[h*self.width + w] = self.pixels[(w,h)].rgb
         im = Image.new("RGB", (self.width, self.height))
         im.putdata(data)
-        im.save(filepath, "PNG")
+        im.save(filepath, "JPEG")
 
 
     #removes a seam from the image
@@ -106,15 +120,8 @@ class Pixel:
     def __str__(self):
         return "[%s - %s]" % (str(self.pos), str(self.rgb))
 
-#given an image file turns into an sc_Image class
-# eventually replace the im.getpixels calls with an im.getdata for performance reasons
-def from_image(filepath):
-    pixels = {}
-    im = Image.open (filepath)
-    width, height = im.size
-    for h in range(height):
-        for w in range(width):
-            pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
-    return sc_Image((width, height), pixels)
+
+
+
 
 
