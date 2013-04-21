@@ -1,5 +1,5 @@
 from energy import e1, entropy
-#from seams import Seam, seam_dijk, seam_dyn
+from seams import Seam, seam_dijk, seam_dyn
 
 import Image
 
@@ -74,25 +74,12 @@ class sc_Image:
 
         #get all of the starting pixels
         if orientation == 'horizontal' : 
-            starting_row = map (self.get_pixel, [(0,h) for h in range(self.height)] )
+            raise NotImplementedError
         elif orientation == 'vertical' :
-            starting_row = map (self.get_pixel, [(w,0) for w in range(self.width)] )
+            return seam_dijk(self, orientation)
         else:
             raise Exception("Orientation must be vertical or horizontal" )
 
-        #create a list of seam objects representing the lowest seam originating
-        #from each starting pixel
-        if alg == 'dijk': 
-            seams = map (seam_dijk, self.pixels)
-        elif alg == 'dyn' :
-            seams = map (seam_dyn, self.pixels)
-        else:
-            raise Exception("%s is not one of the implemented algorithms" % algorithm)
-
-        def get_smaller(a,b):
-            if a<b : return a
-            else: return b
-        seam = reduce (get_smaller, seams)
 
         return seam
 
