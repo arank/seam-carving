@@ -1,5 +1,5 @@
 from energy import e1, entropy
-from seams import Seam, seam_dijk, seam_dyn
+#from seams import Seam, seam_dijk, seam_dyn
 
 import Image
 
@@ -10,8 +10,6 @@ class sc_Image:
         self.width = dimensions[0]
         self.height = dimensions[1]
         self.pixels = pixels
-
-
     
     @classmethod
     def from_filepath(cls, filepath):
@@ -117,8 +115,23 @@ class sc_Image:
 
 
     #removes a seam from the image
-    def remove_seam (self, seam) :
-        raise NotImplementedError
+    def remove_seam_vert (self, seam) :
+        new_pixels = {}
+        for w in range (self.width):
+            decrement = False
+            for h in range(self.height) :
+                if not decrement: 
+                    if not (w,h) in seam:
+                        new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
+                    else:
+                        decrement = True
+                else:
+                    new_w = w-1; new_h = h-1
+                    new_pixels[self.pixels[(new_w, new_h)].pos] = self.pixels[(w,h)]
+
+        self.pixels = new_pixels
+
+
 
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
