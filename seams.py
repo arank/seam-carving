@@ -27,7 +27,7 @@ class Heap :
     def get_children(self, p) :
     	if p*2+1 > len(self.list) :
     		return []
-    	elif p*2+1 = (len(self.list) - 1) :
+    	elif p*2+1 == (len(self.list) - 1) :
     		return [p*2+1]
     	else :
     		return [p*2+1, p*2+2]
@@ -51,7 +51,7 @@ class Heap :
     	if len(c) == 1 :
     		if self.list[p] > c[0] :
     			self.switch(p,c[0])
-    	elif len(self.list[p].get_children) = 2 :
+    	elif len(self.list[p].get_children) == 2 :
     		if self.list[p] > c[0] or self.list[p] > c[1] :
     			if c[0] < c[1] :
     			self.switch(p,c[0])
