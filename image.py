@@ -27,6 +27,21 @@ class sc_Image:
                 pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
         return cls ((width, height), pixels)
 
+    @classmethod
+    def from_filepath2 (cls, filepath):
+        """ Given an image file turns into an sc_Image class.
+        Replaced the im.getpixels calls with an im.getdata for performance reasons
+        """
+        pixels = {}
+        im = Image.open (filepath)
+        width, height = im.size
+        data = im.getdata()
+        for w in range (width):
+            for h in range(height):
+                pixels[(w,h)] = Pixel( (w,h), data[ h * width + w]  )
+
+        return cls ((width, height), pixels)
+
     # get the neighbors of the pixel at pos for e1 function
     def get_neighbors (self, pos):
         raise NotImplementedError
@@ -62,9 +77,9 @@ class sc_Image:
 
         #get all of the starting pixels
         if orientation =='horizontal' : 
-            pixels = map (self.get_pixel, [(0,h) for h in range(self.height)] )
+            starting_row = map (self.get_pixel, [(0,h) for h in range(self.height)] )
         elif orientation == 'vertical' :
-            pixels = map (self.get_pixel, [(w,0) for w in range(self.width)] )
+            starting_row = map (self.get_pixel, [(w,0) for w in range(self.width)] )
         else:
             raise Exception("Orientation must be vertical or horizontal" )
 
