@@ -38,19 +38,24 @@ class Heap :
     	self.list[p2] = t
 
     def b_up(self, p) :
-    	if self.list[int(p/2)].weight < self.list[p].weight :
-    		self.switch(int(p/2),p)
-    		b_up(int(p/2))
+    	if p%2 == 0 :
+    		par = (p-2)/2
+    	else 
+    		par = (p-1)/2
+    	if self.list[par] > self.list[p] :
+    		self.switch(par,p)
+    		b_up(par)
 
     def b_down(self, p) :
     	let c = self.list[p].get_children
-    	if len(c) = 1 :
-    		if self.list[p].weight > c[0].weight :
+    	if len(c) == 1 :
+    		if self.list[p] > c[0] :
     			self.switch(p,c[0])
     	elif len(self.list[p].get_children) = 2 :
-    		if self.list[p].weight > c[0].weight :
+    		if self.list[p] > c[0] or self.list[p] > c[1] :
+    			if c[0] < c[1] :
     			self.switch(p,c[0])
-    		elif self.list[p].weight > c[1].weight :
+    			else :
     			self.switch(p,c[1])
 
 	def add (self, edge) :
@@ -69,6 +74,8 @@ class Edge :
 		self.sink = sink
 		self.weight = weight
 
+	def __cmp__(self,other)
+		return (self.weight - other.weight)
 
 def seam_dijk (image, dir) :
 	super_source = None
