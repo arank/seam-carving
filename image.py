@@ -98,6 +98,13 @@ class sc_Image:
 
         return seam
 
+    def top_vert_row (self) :
+        return map (self.get_pixel, [(0,h) for h in range(self.height)] )
+
+
+    def top_horz_row (self) :
+        return map (self.get_pixel, [(w,0) for w in range(self.width)] )
+
     #write a jpeg representation of this image to a file
     def to_jpeg (self, filepath):
         data = [(0,0, 0)] * (self.width * self.height)
