@@ -4,7 +4,6 @@ from seams import Seam, seam_dijk, seam_dyn
 import Image
 
 
-
 #representation of an image for seam carving
 class sc_Image:
     def __init__(self, dimensions, pixels): 
@@ -125,11 +124,17 @@ class sc_Image:
             self.set_energies (energy)
             self.remove_seam (self.get_next_seam(seam, orientation))
 
+
+
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
         self.energy = -1
+
+        x, y = pos
+        self.x = x 
+        self.y = y
 
     # to string function
     def __str__(self):
