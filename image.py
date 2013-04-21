@@ -37,7 +37,7 @@ class sc_Image:
         width, height = im.size
         data = im.getdata()
         for w in range (width):
-            for h in range(height):
+            for h in range (height):
                 pixels[(w,h)] = Pixel( (w,h), data[ h * width + w]  )
 
         return cls ((width, height), pixels)
@@ -76,7 +76,7 @@ class sc_Image:
     def get_next_seam (self, alg = 'dyn', orientation = 'vertical') :
 
         #get all of the starting pixels
-        if orientation =='horizontal' : 
+        if orientation == 'horizontal' : 
             starting_row = map (self.get_pixel, [(0,h) for h in range(self.height)] )
         elif orientation == 'vertical' :
             starting_row = map (self.get_pixel, [(w,0) for w in range(self.width)] )
@@ -122,8 +122,8 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
         for i in range(new_pixels) :
-            self.set_energies(energy)
-            self.remove_seam(self.get_next_seam(seam, orientation))
+            self.set_energies (energy)
+            self.remove_seam (self.get_next_seam(seam, orientation))
 
 class Pixel:
     def __init__(self, pos, rgb): 
