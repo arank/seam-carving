@@ -8,16 +8,7 @@ class Seam :
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 class Heap :
-<<<<<<< HEAD
-	def __init__():
 
-	#adds edge to heap and fixes it
-	def add (edge):
-
-	#gets top value, and removes it from heap, fixing heap afterwards
-    def get_top () :
-
-=======
 	def __init__(self):
 
         self.list = []
@@ -59,7 +50,6 @@ class Heap :
     	val = self.list.pop(0)
     	self.b_down (0)
     	return val
->>>>>>> Worked on heap
 
 class Edge :
 	def __init__(self, source, sink, weight):
