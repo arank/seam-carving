@@ -15,8 +15,10 @@ class TestHeap :
 
     def get_top (self) :
         return (heapq.heappop(self.h))
+
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
+
 class Heap :
 
     def __init__(self):
@@ -37,7 +39,9 @@ class Heap :
         self.list[p2] = t
 
     def b_up(self, p) :
-        if p%2 == 0 :
+        if p == 0 :
+            return
+        elif p%2 == 0 :
             par = (p-2)/2
         else :
             par = (p-1)/2
