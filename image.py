@@ -5,7 +5,7 @@ from random import randrange
 import Image
 
 def to_grayscale (img):
-    return img.convert("F")
+    return img.convert("L")
 
 def from_pil ( im):
     pixels = {}
@@ -24,6 +24,8 @@ class sc_Image:
         self.pixels = pixels
         self.PIL = PIL
     
+
+
     @classmethod
     def from_filepath(cls, filepath):
         """ Given an image file turns into an sc_Image class.
@@ -57,14 +59,22 @@ class sc_Image:
         
 
     # gets the 3x3square of pixels of the pixel at pos for e1 function
-    def get_neighbors (self, pos):
-        print pos
+    def get_neighbors (self, pos, pixels):
         x, y = pos
 
         data = []
         for j in range(y+1, y-2, -1):
             for i in range(x-1,x+2):
-                data.append(self.get_pixel((i,j)) )
+                try:
+                    data.append(pixels[(i,j)])
+                except KeyError:
+                    data.append(None)
+
+        #later this needs to mirror
+        for i in range(len(data)):
+            if data[i] is None:
+                data[i] = pixels[pos]
+
         return data
 
         # p1 = img.get_pixel(x-1, y+1)
@@ -88,16 +98,20 @@ class sc_Image:
 
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm) :
-        gray_pixels = from_pil(to_grayscale(self.PIL))
+        gray_pixels, width, height = from_pil(to_grayscale(self.PIL))
         #map the energy calculating function to the pixel objects
         if algorithm == 'e1':
-            map (lambda p: e1 (p, self.get_neighbors(p.pos) ), gray_pixels.values() ) 
+            map (lambda p: e1 (p, self.get_neighbors(p.pos, gray_pixels) ), gray_pixels.values() ) 
 
         elif algorithm == 'entropy':
-            map (lambda p: entropy (p,  self.get_square(p.pos) ), gray_pixels.values() ) 
+            map (lambda p: entropy (p,  self.get_square(p.pos, gray_pixels) ), gray_pixels.values() ) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
+
+        for w in range(self.width):
+            for h in range(self.height):
+                self.pixels[(w,h)].energy = gray_pixels[(w,h)].energy
 
     # If resize is vertical, then calls seam_for_start_vert on every 
     # pixel at the left edge of the image and finds the lowest.
@@ -127,6 +141,15 @@ class sc_Image:
             for h in range(self.height):
                 data[h*self.width + w] = self.pixels[(w,h)].rgb
         im = Image.new("RGB", (self.width, self.height))
+        im.putdata(data)
+        im.save(filepath, "JPEG")
+
+    def to_energy_pic (self, filepath):
+        data = [0] * (self.width * self.height)
+        for w in range (self.width):
+            for h in range(self.height):
+                data[h*self.width + w] = self.pixels[(w,h)].energy
+        im = Image.new("L", (self.width, self.height))
         im.putdata(data)
         im.save(filepath, "JPEG")
 
@@ -164,6 +187,7 @@ class Pixel:
         self.rgb = rgb
 
         self.energy = randrange(100)
+
 
 
         x, y = pos
