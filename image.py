@@ -4,15 +4,12 @@ from seams import Seam, seam_dijk, seam_dyn
 import Image
 
 
-
 #representation of an image for seam carving
 class sc_Image:
     def __init__(self, dimensions, pixels): 
         self.width = dimensions[0]
         self.height = dimensions[1]
         self.pixels = pixels
-
-
     
     @classmethod
     def from_filepath(cls, filepath):
@@ -37,7 +34,7 @@ class sc_Image:
         width, height = im.size
         data = im.getdata()
         for w in range (width):
-            for h in range(height):
+            for h in range (height):
                 pixels[(w,h)] = Pixel( (w,h), data[ h * width + w]  )
 
         return cls ((width, height), pixels)
@@ -92,28 +89,22 @@ class sc_Image:
     def get_next_seam (self, alg = 'dyn', orientation = 'vertical') :
 
         #get all of the starting pixels
-        if orientation =='horizontal' : 
-            starting_row = map (self.get_pixel, [(0,h) for h in range(self.height)] )
+        if orientation == 'horizontal' : 
+            raise NotImplementedError
         elif orientation == 'vertical' :
-            starting_row = map (self.get_pixel, [(w,0) for w in range(self.width)] )
+            return seam_dijk(self, orientation)
         else:
             raise Exception("Orientation must be vertical or horizontal" )
 
-        #create a list of seam objects representing the lowest seam originating
-        #from each starting pixel
-        if alg == 'dijk': 
-            seams = map (seam_dijk, self.pixels)
-        elif alg == 'dyn' :
-            seams = map (seam_dyn, self.pixels)
-        else:
-            raise Exception("%s is not one of the implemented algorithms" % algorithm)
-
-        def get_smaller(a,b):
-            if a<b : return a
-            else: return b
-        seam = reduce (get_smaller, seams)
 
         return seam
+
+    def top_vert_row (self) :
+        return map (self.get_pixel, [(0,h) for h in range(self.height)] )
+
+
+    def top_horz_row (self) :
+        return map (self.get_pixel, [(w,0) for w in range(self.width)] )
 
     #write a jpeg representation of this image to a file
     def to_jpeg (self, filepath):
@@ -127,8 +118,23 @@ class sc_Image:
 
 
     #removes a seam from the image
-    def remove_seam (self, seam) :
-        raise NotImplementedError
+    def remove_seam_vert (self, seam) :
+        new_pixels = {}
+        for w in range (self.width):
+            decrement = False
+            for h in range(self.height) :
+                if not decrement: 
+                    if not (w,h) in seam:
+                        new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
+                    else:
+                        decrement = True
+                else:
+                    new_w = w-1; new_h = h-1
+                    new_pixels[self.pixels[(new_w, new_h)].pos] = self.pixels[(w,h)]
+
+        self.pixels = new_pixels
+
+
 
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
@@ -138,14 +144,20 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
         for i in range(new_pixels) :
-            self.set_energies(energy)
-            self.remove_seam(self.get_next_seam(seam, orientation))
+            self.set_energies (energy)
+            self.remove_seam (self.get_next_seam(seam, orientation))
+
+
 
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
         self.energy = -1
+
+        x, y = pos
+        self.x = x 
+        self.y = y
 
     # to string function
     def __str__(self):
