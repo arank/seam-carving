@@ -58,18 +58,19 @@ class Heap :
             if self.list[p] > self.list[c[0]] or self.list[p] > self.list[c[1]] :
                 if self.list[c[0]] < self.list[c[1]] :
                     self.switch(p,c[0])
+                    self.b_down(c[0])
                 else :
                     self.switch(p,c[1])
-            self.b_down(c[0])
-            self.b_down(c[1])
+                    self.b_down(c[1])
 
     def add (self, edge) :
         self.list.append(edge)
         self.b_up (len(self.list)-1)
 
     def get_top (self) :
-        val = self.list.pop(0)
-        self.b_down (0)
+        val = self.list[0]
+        self.list[0] = self.list.pop()
+        self.b_down(0)
         return val
 
 class Edge :
@@ -87,7 +88,7 @@ class Edge :
         return "[%s]" % str(self.weight)
 
 def seam_dijk (image, dir) :
-    heap = TestHeap ()
+    heap = Heap ()
     path =[]
     dic = {}
     prev ={}
