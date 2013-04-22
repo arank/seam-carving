@@ -51,6 +51,7 @@ class sc_Image:
     # gets the 9x9 square of pixels of the pixel at pos for entropy function
     def get_square (self, pos):
         img = self.mirror
+<<<<<<< HEAD
         x, y = pos
 
         data = []
@@ -69,6 +70,19 @@ class sc_Image:
         # p8 = img.get_pixel(x+1, y-1)
         # n = [p1, p2, p3, p4, p5, p6, p7, p8]
         # return n
+=======
+        x, y = pos       
+        p1 = img.get_pixel(x-1, y+1)
+        p2 = img.get_pixel(x, y+1)
+        p3 = img.get_pixel(x+1, y+1)
+        p4 = img.get_pixel(x-1, y)
+        p5 = img.get_pixel(x+1, y)
+        p6 = img.get_pixel(x-1, y-1)
+        p7 = img.get_pixel(x, y-1)
+        p8 = img.get_pixel(x+1, y-1)
+        n = [p1, p2, p3, p4, p5, p6, p7, p8]
+        return n
+>>>>>>> origin/SergsEnergies
 
     def get_pixel(self, pos):
         if pos in self.pixels:

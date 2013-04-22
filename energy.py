@@ -2,7 +2,11 @@
 #gets energy using e1 algorithm. helper methods may be added later
 def e1(pixel, neighbors):
         x, y = pixel.pos
+<<<<<<< HEAD
         [n1, n2, n3, n4, px, n5, n6, n7, n8] = neighbors
+=======
+        [n1, n2, n3, n4, n5, n6, 7n, n8] = neighbors
+>>>>>>> origin/SergsEnergies
         """
         | n1 n2 n3 |
         | n4 px n5 |
