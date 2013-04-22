@@ -1,6 +1,6 @@
 from energy import e1, entropy
 from seams import Seam, seam_dijk, seam_dyn
-
+from random import randrange
 import Image
 
 
@@ -153,7 +153,7 @@ class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
-        self.energy = -1
+        self.energy = randrange(100)
 
         x, y = pos
         self.x = x 
