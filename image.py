@@ -155,12 +155,13 @@ class sc_Image:
 
     #removes a seam from the image
     def remove_seam_vert (self, seam) :
+        to_remove = map ( lambda p:  p.pos , filter(None, seam))
         new_pixels = {}
         for w in range (self.width):
             decrement = False
             for h in range(self.height) :
                 if not decrement: 
-                    if not (w,h) in seam:
+                    if not (w,h) in to_remove:
                         new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
                     else:
                         decrement = True
