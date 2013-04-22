@@ -47,7 +47,7 @@ class Heap :
             par = (p-1)/2
         if self.list[par] > self.list[p] :
             self.switch(par,p)
-            b_up(par)
+            self.b_up(par)
 
     def b_down(self, p) :
         c = self.list[p].get_children
@@ -85,7 +85,7 @@ class Edge :
     def __str__(self):
 
         return "[%s]" % str(self.weight)
-        
+
 def seam_dijk (image, dir) :
     heap = Heap ()
     path =[]
