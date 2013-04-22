@@ -1,4 +1,4 @@
-
+from math import fabs
 #gets energy using e1 algorithm. helper methods may be added later
 def e1(pixel, neighbors):
         x, y = pixel.pos
@@ -16,9 +16,9 @@ def e1(pixel, neighbors):
         neg_dy = 4 * pixel.rgb - 2 * n2.rgb - n3.rgb - n1.rgb
         dy = pos_dy - neg_dy
 
-        energy = fabs(dx) + fabs(dy)
+        pixel.energy = fabs(dx) + fabs(dy)
         
-        return energy
+        return pixel
 
 #gets energy using entropy algorithm. helper methods may be added later
 def entropy(pixel, square):
