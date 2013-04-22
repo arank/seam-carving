@@ -87,7 +87,7 @@ class Edge :
         return "[%s]" % str(self.weight)
 
 def seam_dijk (image, dir) :
-    heap = Heap ()
+    heap = TestHeap ()
     path =[]
     dic = {}
     prev ={}
