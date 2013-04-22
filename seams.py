@@ -60,6 +60,8 @@ class Heap :
                     self.switch(p,c[0])
                 else :
                     self.switch(p,c[1])
+            self.b_down(c[0])
+            self.b_down(c[1])
 
     def add (self, edge) :
         self.list.append(edge)
