@@ -1,6 +1,6 @@
 import image
 
-im = image.sc_Image.from_filepath2("castle.jpg")
+im = image.sc_Image.from_filepath2("landscape.jpg")
 
 print [str(p) for p in im.get_next_seam("dijk")]
 
