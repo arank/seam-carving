@@ -81,7 +81,11 @@ class Edge :
 
     def __cmp__(self,other):
         return (self.weight - other.weight)
+    
+    def __str__(self):
 
+        return "[%s]" % str(self.weight)
+        
 def seam_dijk (image, dir) :
     super_source = None
     heap = TestHeap ()
