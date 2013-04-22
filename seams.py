@@ -16,14 +16,6 @@ class TestHeap :
     def get_top (self) :
         return (heapq.heappop(self.h))
 
-<<<<<<< HEAD
-    def empty (self) :
-        if (not self.h) :
-            return True
-        else:
-            return False
-=======
->>>>>>> ac5b80653681bb4ec9c1c7a4398d333d9194be3d
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 
@@ -95,7 +87,7 @@ class Edge :
         return "[%s]" % str(self.weight)
         
 def seam_dijk (image, dir) :
-    heap = TestHeap ()
+    heap = Heap ()
     path =[]
     dic = {}
     prev ={}
