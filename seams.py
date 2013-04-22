@@ -50,13 +50,13 @@ class Heap :
             self.b_up(par)
 
     def b_down(self, p) :
-        c = self.list[p].get_children
+        c = self.get_children(p)
         if len(c) == 1 :
-            if self.list[p] > c[0] :
+            if self.list[p] > self.list[c[0]] :
                 self.switch(p,c[0])
-        elif len(self.list[p].get_children) == 2 :
-            if self.list[p] > c[0] or self.list[p] > c[1] :
-                if c[0] < c[1] :
+        elif len(c) == 2 :
+            if self.list[p] > self.list[c[0]] or self.list[p] > self.list[c[1]] :
+                if self.list[c[0]] < self.list[c[1]] :
                     self.switch(p,c[0])
                 else :
                     self.switch(p,c[1])
