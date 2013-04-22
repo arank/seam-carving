@@ -91,6 +91,7 @@ def seam_dijk (image, dir) :
     path =[]
     dic = {}
     prev ={}
+    num =0
 
     def get_path(node) :
         path.append(prev[node])
@@ -135,11 +136,15 @@ def seam_dijk (image, dir) :
                 else :
                     dic[n.pos] = cost
                     prev[n.pos] = edge.sink
+                    print num
                     heap.add(Edge(edge, n, cost))
+                    num=num+1
             else :
                 dic[n.pos] = cost
                 prev[n.pos] = edge.sink
                 heap.add(Edge(edge, n, cost))
+                print num
+                num=num+1
             
 
 
