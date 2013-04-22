@@ -26,9 +26,9 @@ class Heap :
         self.list = []
 
     def get_children(self, p) :
-        if p*2+1 > len(self.list) :
+        if p*2+1 > (len(self.list)-1) :
             return []
-        elif p*2+1 == (len(self.list) - 1) :
+        elif p*2+1 == (len(self.list)-1) :
             return [p*2+1]
         else :
             return [p*2+1, p*2+2]
