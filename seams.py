@@ -113,6 +113,7 @@ def seam_dijk (image, dir) :
         neighbors = []
             
         if (edge.sink.y == (image.height-1)) :
+            path.append(edge.sink)
             get_path(edge.sink.pos)
             return path
         else :
