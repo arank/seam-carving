@@ -70,10 +70,24 @@ class sc_Image:
                 except KeyError:
                     data.append(None)
 
+
+        edge_replace = {0 : [2,6], 1 : [7], 2 : [0,8],
+        3 : [5], 5 : [3], 6 : [0,8],  7 : [1], 8 : [2,6]
+        }
+
+
+
         #later this needs to mirror
         for i in range(len(data)):
             if data[i] is None:
-                data[i] = pixels[pos]
+                for replace_with in edge_replace[i] : 
+                    if data[replace_with] is not None:
+                        data [i] = data [replace_with]
+                        break
+                # if still none (corners) just replace with itself
+                if data[i] is None:
+                    data[i] = data [4] 
+
 
         return data
 
