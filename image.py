@@ -26,7 +26,6 @@ class sc_Image:
         self.PIL = PIL
     
 
-
     @classmethod
     def from_filepath(cls, filepath):
         """ Given an image file turns into an sc_Image class.
@@ -59,8 +58,7 @@ class sc_Image:
     #         temp = self.pixels[(w, h)]
         
 
-    # gets the 3x3square of pixels of the pixel at pos for e1 function
-    def get_neighbors (self, pos, pixels):
+    def get_neighbors_simple (self, pos, pixels):
         x, y = pos
         data = []
         for j in range(y+1, y-2, -1):
@@ -70,6 +68,11 @@ class sc_Image:
                 except KeyError:
                     data.append(None)
 
+
+    # gets the 3x3square of pixels of the pixel at pos for e1 function
+    def get_neighbors (self, pos, pixels):
+
+        data = self.get_neighbors_simple(pos, pixels)
 
         edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
         3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]
@@ -120,20 +123,25 @@ class sc_Image:
 
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm) :
-        gray_pixels = self.get_grayscale_pixels()
         #map the energy calculating function to the pixel objects
+
+        def set_energy_e1 (pixel):
+            if pixel.recalculate :
+                return e1 (pixel, self.get_neighbors(pixel.pos,self.pixels) )
+            else :
+                return pixel
+
+        def set_energy_entropy(pixel):
+            raise NotImplementedError
+
         if algorithm == 'e1':
-            map (lambda p: e1 (p, self.get_neighbors(p.pos, gray_pixels) ), gray_pixels.values() ) 
+            map (set_energy_e1 ,self.pixels.values() ) 
 
         elif algorithm == 'entropy':
-            map (lambda p: entropy (p,  self.get_square(p.pos, gray_pixels) ), gray_pixels.values() ) 
+            map (set_energy_entropy ,self.pixels.values() ) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
-
-        for w in range(self.width):
-            for h in range(self.height):
-                self.pixels[(w,h)].energy = gray_pixels[(w,h)].energy
 
     # If resize is vertical, then calls seam_for_start_vert on every 
     # pixel at the left edge of the image and finds the lowest.
@@ -209,6 +217,23 @@ class sc_Image:
         #self.to_jpeg("temp.jpg")
         #self.PIL = Image.open ("temp.jpg")
 
+    def remove_seam_vert2 (self, alg):
+        seam = self.get_next_seam(alg, 'vertical')
+        to_remove = map ( lambda p:  p.pos , filter(None, seam))
+
+        for h in range(self.height):
+            decrement = False
+            for w in range (self.width):
+                if not decrement 
+                    if (w,h) in to_remove:
+                        decrement = True
+                        map()
+                else:
+                    self.pixels[(w,h)].dec_x()
+
+        self.width -= 1
+
+
 
 
     #calculate the lowest energy seams then add duplicates of them to the picture
@@ -221,22 +246,38 @@ class sc_Image:
         for i in range(to_remove) :
             self.set_energies (energy)
             if orientation == 'vertical' :
-                self.remove_seam_vert (alg)
+                self.remove_seam_vert2 (alg)
 
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
 
-        self.energy = randrange(100)
+        r, g, b = p.rgb
+        self.gray =  r + 256*g + (256^2)*b
+
+        self.energy = 0
+
+        self.recalculate = True
 
         x, y = pos
         self.x = x 
         self.y = y
+
+
     def refresh_xy(self):
         x, y = self.pos
         self.x = x 
         self.y = y
+
+    def dec_x(self):
+        x,y = self.pos
+        self.x = x -1 
+        self.pos = (x,y)
+
+    def to_recalculate(self):
+        self.recalculate = True
+
     # to string function
     def __str__(self):
         return "[%s , %s]" % (str(self.pos), str(self.energy))
