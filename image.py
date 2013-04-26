@@ -129,6 +129,8 @@ class sc_Image:
         im.putdata(data)
         im.save(filepath, "JPEG")
 
+def delete_vertical_seam (img, path):
+
     #removes a seam from the image
     def remove_seam_vert (self, seam) :
         new_pixels = {}
