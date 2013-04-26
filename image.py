@@ -167,33 +167,6 @@ class sc_Image:
         im.putdata(data)
         im.save(filepath, "JPEG")
 
-    #removes a seam from the image
-    # def remove_seam_vert (self,  alg) :
-    #     seam = self.get_next_seam(alg, 'vertical')
-    #     to_remove = map ( lambda p:  p.pos , filter(None, seam))
-    #     new_pixels = {}
-    #     for h in range(self.height) :
-    #         decrement = False
-    #         for w in range (self.width):
-    #             if not decrement: 
-    #                 if not (w,h) in to_remove:
-    #                     new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
-                        
-    #                 else:
-
-    #                     decrement = True
-    #             else:
-    #                 new_w = w-1; 
-
-    #                 self.pixels[(w,h)].pos = (new_w,h)
-    #                 self.pixels[(w,h)].refresh_xy()
-    #                 new_pixels[(new_w,h)] = self.pixels[(w,h)]
-
-    #     self.pixels = new_pixels
-    #     self.width -= 1
-
-        #self.to_jpeg("temp.jpg")
-        #self.PIL = Image.open ("temp.jpg")
 
     def remove_seam_vert2 (self, alg):
 
@@ -209,7 +182,8 @@ class sc_Image:
                         self.recalculate_neighbors((w,h))
 
                 else:
-                    self.pixels[(w,h)].dec_x()
+                    self.pixels[(w,h)].shift_pos(-1,0)
+                    #self.pixels[(w,h)].dec_x()
                     self.pixels[(w-1,h)] = self.pixels[(w,h)]
 
 
@@ -220,13 +194,14 @@ class sc_Image:
         return seam
 
 
-
+    #debugging function that makes sure self.pixels is consistent
     def check_for_mismatch(self):
         for h in range(self.height): 
             for w in range (self.width): 
                 if self.pixels[(w,h)].pos != (w,h) :
                     print 'mismatch at ', w, h, "-- ",self.pixels[(w,h)].pos
 
+    #debugging function that checks self.pixels for None types
     def check_for_none(self):
         for h in range(self.height): 
             for w in range (self.width):
@@ -246,7 +221,7 @@ class sc_Image:
         for i in range(new_pixels):
             self.set_energies(energy)
 
-            if orientation = 'vertical':
+            if orientation == 'vertical':
                 seams.append(self.remove_seam_vert2(alg))
 
 
@@ -281,19 +256,8 @@ class Pixel:
 
         self.recalculate = True
 
-        x, y = pos
-        self.x = x 
-        self.y = y
-
-    def refresh_xy(self):
-        x, y = self.pos
-        self.x = x 
-        self.y = y
-
-    def dec_x(self):
-        x,y = self.pos
-        self.x = x -1 
-        self.pos = (self.x,self.y)
+    def shift_pos(self, dx, dy):
+        self.pos = (self.pos[0]+dx, self.pos[1]+dy)
 
     def to_recalculate(self):
         self.recalculate = True
