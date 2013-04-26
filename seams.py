@@ -113,21 +113,21 @@ def seam_dijk (image, dir) :
         #nighbors
         neighbors = []
             
-        if (edge.sink.y == (image.height-1)) :
+        if (edge.sink.pos[1] == (image.height-1)) :
             path.append(edge.sink)
             get_path(edge.sink.pos)
             return path
         else :
-            neighbors.append(image.pixels[ (edge.sink.x, (edge.sink.y+1)) ])
-            if edge.sink.x == (image.width-1) :
-                 neighbors.append(image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ])
+            neighbors.append(image.pixels[ (edge.sink.pos[0], (edge.sink.pos[1]+1)) ])
+            if edge.sink.pos[0] == (image.width-1) :
+                 neighbors.append(image.pixels[ ((edge.sink.pos[0]-1), (edge.sink.pos[1]+1)) ])
 
-            elif edge.sink.x == 0 :
-                 neighbors.append(image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ])
+            elif edge.sink.pos[0] == 0 :
+                 neighbors.append(image.pixels[ ((edge.sink.pos[0]+1), (edge.sink.pos[1]+1)) ])
 
             else :
-                neighbors.append(image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ])
-                neighbors.append(image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ])
+                neighbors.append(image.pixels[ ((edge.sink.pos[0]-1), (edge.sink.pos[1]+1)) ])
+                neighbors.append(image.pixels[ ((edge.sink.pos[0]+1), (edge.sink.pos[1]+1)) ])
         
         for n in neighbors:
             cost = (edge.weight+n.energy)
