@@ -1,10 +1,12 @@
 from energy import e1, entropy
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
+
 import Image
 
+
 def to_grayscale (img):
-    return img.convert("F")
+    return img.convert("L")
 
 def from_pil ( im):
     pixels = {}
@@ -23,6 +25,8 @@ class sc_Image:
         self.pixels = pixels
         self.PIL = PIL
     
+
+
     @classmethod
     def from_filepath(cls, filepath):
         """ Given an image file turns into an sc_Image class.
@@ -56,14 +60,30 @@ class sc_Image:
         
 
     # gets the 3x3square of pixels of the pixel at pos for e1 function
-    def get_neighbors (self, pos):
-        print pos
+    def get_neighbors (self, pos, pixels):
         x, y = pos
-
         data = []
         for j in range(y+1, y-2, -1):
             for i in range(x-1,x+2):
-                data.append(self.get_pixel((i,j)) )
+                try:
+                    data.append(pixels[(i,j)])
+                except KeyError:
+                    data.append(None)
+
+
+        edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
+        3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]
+        }
+
+
+        for i in range(len(data)):
+            if data[i] is None:
+                for replace_with in edge_replace[i] : 
+                    if data[replace_with] is not None:
+                        data [i] = data [replace_with]
+                        break
+
+
         return data
 
         # p1 = img.get_pixel(x-1, y+1)
@@ -83,26 +103,43 @@ class sc_Image:
         else:
             return None
 
-    #def get_grayscale_pixels(self)        
+    def get_grayscale_pixels(self):
+        def convert_one(p):
+            if isinstance (p.rgb, int):
+                return p
+            r, g, b = p.rgb
+            gray = r + 256*g + (256^2)*b
+            return Pixel(p.pos, gray)
+
+        gray_pixels = {}
+        for h in range(self.height):
+            for w in range(self.width):
+                gray_pixels[(w,h)] = convert_one(self.pixels[(w,h)])
+        return gray_pixels
+
 
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm) :
-        gray_pixels = from_pil(to_grayscale(self.PIL))
+        gray_pixels = self.get_grayscale_pixels()
         #map the energy calculating function to the pixel objects
         if algorithm == 'e1':
-            map (lambda p: e1 (p, self.get_neighbors(p.pos) ), gray_pixels.values() ) 
+            map (lambda p: e1 (p, self.get_neighbors(p.pos, gray_pixels) ), gray_pixels.values() ) 
 
         elif algorithm == 'entropy':
-            map (lambda p: entropy (p,  self.get_square(p.pos) ), gray_pixels.values() ) 
+            map (lambda p: entropy (p,  self.get_square(p.pos, gray_pixels) ), gray_pixels.values() ) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
+
+        for w in range(self.width):
+            for h in range(self.height):
+                self.pixels[(w,h)].energy = gray_pixels[(w,h)].energy
 
     # If resize is vertical, then calls seam_for_start_vert on every 
     # pixel at the left edge of the image and finds the lowest.
     # If resize is horizontal, then calls seam_for_start_hor on every
     # pixel at the top edge of the image and finds the lowest.
-    def get_next_seam (self, alg = 'dyn', orientation = 'vertical') :
+    def get_next_seam (self, alg , orientation ) :
 
         #get all of the starting pixels
         if orientation == 'horizontal' : 
@@ -124,29 +161,55 @@ class sc_Image:
         data = [(0,0, 0)] * (self.width * self.height)
         for w in range (self.width):
             for h in range(self.height):
+                # print "(%s, %s); (%s, %s)" % (w,h, self.width, self.height)
                 data[h*self.width + w] = self.pixels[(w,h)].rgb
         im = Image.new("RGB", (self.width, self.height))
         im.putdata(data)
         im.save(filepath, "JPEG")
 
-def delete_vertical_seam (img, path):
+    def to_energy_pic (self, filepath):
+
+        pixels, w,h = from_pil (to_grayscale(self.PIL))
+        self.pixels = pixels
+        self.set_energies('e1')
+
+        data = [0] * (self.width * self.height)
+        for w in range (self.width):
+            for h in range(self.height):
+                data[h*self.width + w] = self.pixels[(w,h)].energy
+        im = Image.new("L", (self.width, self.height))
+        im.putdata(data)
+        im.save(filepath, "JPEG")
 
     #removes a seam from the image
-    def remove_seam_vert (self, seam) :
+    def remove_seam_vert (self,  alg) :
+        seam = self.get_next_seam(alg, 'vertical')
+        to_remove = map ( lambda p:  p.pos , filter(None, seam))
         new_pixels = {}
-        for w in range (self.width):
+        for h in range(self.height) :
             decrement = False
-            for h in range(self.height) :
+            for w in range (self.width):
                 if not decrement: 
-                    if not (w,h) in seam:
+                    if not (w,h) in to_remove:
                         new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
+                        
                     else:
+
                         decrement = True
                 else:
-                    new_w = w-1; new_h = h-1
-                    new_pixels[self.pixels[(new_w, new_h)].pos] = self.pixels[(w,h)]
+                    new_w = w-1; 
+
+                    self.pixels[(w,h)].pos = (new_w,h)
+                    self.pixels[(w,h)].refresh_xy()
+                    new_pixels[(new_w,h)] = self.pixels[(w,h)]
 
         self.pixels = new_pixels
+        self.width -= 1
+
+        #self.to_jpeg("temp.jpg")
+        #self.PIL = Image.open ("temp.jpg")
+
+
 
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
@@ -154,24 +217,29 @@ def delete_vertical_seam (img, path):
 
 
     # shrinks a picture by continouslly removing the lowest energy seem
-    def shrink (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
-        for i in range(new_pixels) :
+    def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dijk'):
+        for i in range(to_remove) :
             self.set_energies (energy)
-            self.remove_seam (self.get_next_seam(seam, orientation))
+            if orientation == 'vertical' :
+                self.remove_seam_vert (alg)
 
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
+
         self.energy = randrange(100)
 
         x, y = pos
         self.x = x 
         self.y = y
-
+    def refresh_xy(self):
+        x, y = self.pos
+        self.x = x 
+        self.y = y
     # to string function
     def __str__(self):
-        return "[%s - %s]" % (str(self.pos), str(self.rgb))
+        return "[%s , %s]" % (str(self.pos), str(self.energy))
 
 
 

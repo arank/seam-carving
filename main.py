@@ -1,10 +1,9 @@
 import image
 
-im = image.sc_Image.from_filepath2("castle.jpg")
+im = image.sc_Image.from_filepath2("landscape.jpg")
 
-print im.get_next_seam("dijk")
-
+im.shrink(50)
 # image.shrink( 'horizontal', 300 , 'e1', 'dyn')
 
-im.to_jpeg("new_castle.jpg")
+im.to_jpeg("new_landscape2.jpg")
 

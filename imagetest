@@ -1,4 +1,0 @@
-import Image
-
-img = Image.open ("castle.jpg")
-print ('this is the RGBA of (0,0): %d' % img[0,0])

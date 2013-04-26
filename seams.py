@@ -26,9 +26,9 @@ class Heap :
         self.list = []
 
     def get_children(self, p) :
-        if p*2+1 > len(self.list) :
+        if p*2+1 > (len(self.list)-1) :
             return []
-        elif p*2+1 == (len(self.list) - 1) :
+        elif p*2+1 == (len(self.list)-1) :
             return [p*2+1]
         else :
             return [p*2+1, p*2+2]
@@ -47,27 +47,30 @@ class Heap :
             par = (p-1)/2
         if self.list[par] > self.list[p] :
             self.switch(par,p)
-            b_up(par)
+            self.b_up(par)
 
     def b_down(self, p) :
-        c = self.list[p].get_children
+        c = self.get_children(p)
         if len(c) == 1 :
-            if self.list[p] > c[0] :
+            if self.list[p] > self.list[c[0]] :
                 self.switch(p,c[0])
-        elif len(self.list[p].get_children) == 2 :
-            if self.list[p] > c[0] or self.list[p] > c[1] :
-                if c[0] < c[1] :
+        elif len(c) == 2 :
+            if self.list[p] > self.list[c[0]] or self.list[p] > self.list[c[1]] :
+                if self.list[c[0]] < self.list[c[1]] :
                     self.switch(p,c[0])
+                    self.b_down(c[0])
                 else :
                     self.switch(p,c[1])
+                    self.b_down(c[1])
 
     def add (self, edge) :
         self.list.append(edge)
         self.b_up (len(self.list)-1)
 
     def get_top (self) :
-        val = self.list.pop(0)
-        self.b_down (0)
+        val = self.list[0]
+        self.list[0] = self.list.pop()
+        self.b_down(0)
         return val
 
 class Edge :
@@ -79,41 +82,67 @@ class Edge :
 
     def __cmp__(self,other):
         return (self.weight - other.weight)
+    
+    def __str__(self):
+
+        return "[%s]" % str(self.weight)
 
 def seam_dijk (image, dir) :
-    super_source = None
     heap = TestHeap ()
-    def get_path(edge, path) :
-        path.append(edge.sink)
-        if edge.source is None:
-            return path
+    path =[]
+    dic = {}
+    prev ={}
+
+    def get_path(node) :
+        path.append(prev[node])
+        if prev[node] is None:
+            # print [str(p) for p in path if len(path) > 900]
+            return
         else :
-            get_path(edge.source, path)
+            get_path(prev[node].pos)
 
-    for pix in image.top_vert_row(): #also do top horz rowm
+    for pix in image.top_horz_row(): 
         heap.add(Edge(None, pix, pix.energy))
+        dic[pix.pos]=pix.energy
+        prev[pix.pos]=None
 
-    while True :
+    # while (len(dic.keys())<(image.width*image.height)) :
+    while True : 
         edge = heap.get_top()
 
-        if edge.sink.y == (image.height-1) :
-            return (get_path(edge,[]))
-
-        down =image.pixels[ (edge.sink.x, (edge.sink.y+1)) ]
-        heap.add(Edge(edge, down, down.energy+edge.weight))
-
-        if edge.sink.x == (image.width-1) :
-            left = image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ]
-            heap.add(Edge(edge, left, left.energy+edge.weight))
-
-        elif edge.sink.x == 0 :
-            right = image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ]
-            heap.add(Edge(edge, right, right.energy+edge.weight))   
+        #nighbors
+        neighbors = []
+            
+        if (edge.sink.y == (image.height-1)) :
+            path.append(edge.sink)
+            get_path(edge.sink.pos)
+            return path
         else :
-            left = image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ]
-            right = image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ]
-            heap.add(Edge(edge, right, right.energy+edge.weight))   
-            heap.add(Edge(edge, left, left.energy+edge.weight)) 
+            neighbors.append(image.pixels[ (edge.sink.x, (edge.sink.y+1)) ])
+            if edge.sink.x == (image.width-1) :
+                 neighbors.append(image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ])
+
+            elif edge.sink.x == 0 :
+                 neighbors.append(image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ])
+
+            else :
+                neighbors.append(image.pixels[ ((edge.sink.x-1), (edge.sink.y+1)) ])
+                neighbors.append(image.pixels[ ((edge.sink.x+1), (edge.sink.y+1)) ])
+        
+        for n in neighbors:
+            cost = (edge.weight+n.energy)
+            if n.pos in dic:
+                if (dic[n.pos] < cost):
+                    continue
+                else :
+                    dic[n.pos] = cost
+                    prev[n.pos] = edge.sink
+                    heap.add(Edge(edge, n, cost))
+            else :
+                dic[n.pos] = cost
+                prev[n.pos] = edge.sink
+                heap.add(Edge(edge, n, cost))
+            
 
 
 
