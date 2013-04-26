@@ -217,6 +217,8 @@ class sc_Image:
 
         self.width -= 1
 
+        return seam
+
 
 
     def check_for_mismatch(self):
@@ -232,9 +234,25 @@ class sc_Image:
                     print "(%s, %s) is None" % (w,h)
 
 
-    #calculate the lowest energy seams then add duplicates of them to the picture
-    def enlarge (self, orientation, new_pixels, energy = 'e1', seam = 'dyn'):
+    def insert_seam(pixels, seam):
         raise NotImplementedError
+
+    #calculate the lowest energy seams then add duplicates of them to the picture
+    def enlarge (self, orientation, new_pixels, energy = 'e1', alg = 'dijk'):
+
+        original_pixels = self.pixels
+
+        seams = []
+        for i in range(new_pixels):
+            self.set_energies(energy)
+
+            if orientation = 'vertical':
+                seams.append(self.remove_seam_vert2(alg))
+
+
+        for s in seams:
+            insert_seam(original_pixels, s)
+
 
 
     # shrinks a picture by continouslly removing the lowest energy seem
@@ -244,14 +262,16 @@ class sc_Image:
             self.set_energies (energy)
 
             if orientation == 'vertical' :
-                self.remove_seam_vert2 (alg)
+                seam = self.remove_seam_vert2 (alg)
 
             print i
+
 
 
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
+        self.original_pos = pos
         self.rgb = rgb
 
         r, g, b = self.rgb
