@@ -48,17 +48,10 @@ class sc_Image:
         pixels, width, height = from_pil(im)
         return cls ((width, height), pixels, im)
 
-
-    # def mirror (self):
-    #     width = self.dimensions[0]
-    #     height = self.dimensions[1]
-    #     temp = self.pixels[(0, 0)]
-    #     for w in range (width):
-    #         self.pixels.insert(  [(w + 1, h + 1)] = temp
-    #         temp = self.pixels[(w, h)]
         
 
     def get_neighbors_simple (self, pos, pixels):
+
         x, y = pos
         data = []
         for j in range(y+1, y-2, -1):
@@ -67,6 +60,12 @@ class sc_Image:
                     data.append(pixels[(i,j)])
                 except KeyError:
                     data.append(None)
+        return data
+
+    def recalculate_neighbors(self, pos):
+        for p in self.get_neighbors_simple (pos, self.pixels):
+            if p is not None:
+                p.to_recalculate()
 
 
     # gets the 3x3square of pixels of the pixel at pos for e1 function
@@ -87,18 +86,8 @@ class sc_Image:
                         break
 
 
-        return data
 
-        # p1 = img.get_pixel(x-1, y+1)
-        # p2 = img.get_pixel(x, y+1)
-        # p3 = img.get_pixel(x+1, y+1)
-        # p4 = img.get_pixel(x-1, y)
-        # p5 = img.get_pixel(x+1, y)
-        # p6 = img.get_pixel(x-1, y-1)
-        # p7 = img.get_pixel(x, y-1)
-        # p8 = img.get_pixel(x+1, y-1)
-        # n = [p1, p2, p3, p4, p5, p6, p7, p8]
-        # return n
+        return data
 
     def get_pixel(self, pos):
         if pos in self.pixels:
@@ -125,15 +114,18 @@ class sc_Image:
     def set_energies (self, algorithm) :
         #map the energy calculating function to the pixel objects
 
+        #print self.pixels[(127,107)
+
         def set_energy_e1 (pixel):
             if pixel.recalculate :
-                return e1 (pixel, self.get_neighbors(pixel.pos,self.pixels) )
+                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels) )
             else :
                 return pixel
 
         def set_energy_entropy(pixel):
             raise NotImplementedError
 
+        #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
         if algorithm == 'e1':
             map (set_energy_e1 ,self.pixels.values() ) 
 
@@ -142,6 +134,8 @@ class sc_Image:
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
+
+
 
     # If resize is vertical, then calls seam_for_start_vert on every 
     # pixel at the left edge of the image and finds the lowest.
@@ -177,8 +171,8 @@ class sc_Image:
 
     def to_energy_pic (self, filepath):
 
-        pixels, w,h = from_pil (to_grayscale(self.PIL))
-        self.pixels = pixels
+        #pixels, w,h = from_pil (to_grayscale(self.PIL))
+        #self.pixels = pixels
         self.set_energies('e1')
 
         data = [0] * (self.width * self.height)
@@ -218,22 +212,44 @@ class sc_Image:
         #self.PIL = Image.open ("temp.jpg")
 
     def remove_seam_vert2 (self, alg):
+
         seam = self.get_next_seam(alg, 'vertical')
         to_remove = map ( lambda p:  p.pos , filter(None, seam))
 
         for h in range(self.height):
             decrement = False
             for w in range (self.width):
-                if not decrement 
+                if not decrement:
                     if (w,h) in to_remove:
                         decrement = True
-                        map()
+                        self.recalculate_neighbors((w,h))
+                        #del self.pixels[(w,h)]
+
                 else:
                     self.pixels[(w,h)].dec_x()
+                    self.pixels[(w-1,h)] = self.pixels[(w,h)]
+
+
+            del self.pixels[self.width-1, h]
+
+            #print "(%s, %s)" % (w,h)
 
         self.width -= 1
 
+        self.check_for_mismatch()
 
+
+    def check_for_mismatch(self):
+        for h in range(self.height): 
+            for w in range (self.width): 
+                if self.pixels[(w,h)].pos != (w,h) :
+                    print 'mismatch at ', w, h, "-- ",self.pixels[(w,h)].pos
+
+    def check_for_none(self):
+        for h in range(self.height): 
+            for w in range (self.width):
+                if self.pixels[(w,h)] is None:
+                    print "(%s, %s) is None" % (w,h)
 
 
     #calculate the lowest energy seams then add duplicates of them to the picture
@@ -243,18 +259,23 @@ class sc_Image:
 
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dijk'):
+
         for i in range(to_remove) :
             self.set_energies (energy)
+
             if orientation == 'vertical' :
                 self.remove_seam_vert2 (alg)
+
+            print i
+
 
 class Pixel:
     def __init__(self, pos, rgb): 
         self.pos = pos
         self.rgb = rgb
 
-        r, g, b = p.rgb
-        self.gray =  r + 256*g + (256^2)*b
+        r, g, b = self.rgb
+        self.gray =  r + 256 * g + (256^2) * b
 
         self.energy = 0
 
@@ -264,7 +285,6 @@ class Pixel:
         self.x = x 
         self.y = y
 
-
     def refresh_xy(self):
         x, y = self.pos
         self.x = x 
@@ -273,7 +293,7 @@ class Pixel:
     def dec_x(self):
         x,y = self.pos
         self.x = x -1 
-        self.pos = (x,y)
+        self.pos = (self.x,self.y)
 
     def to_recalculate(self):
         self.recalculate = True
@@ -281,10 +301,3 @@ class Pixel:
     # to string function
     def __str__(self):
         return "[%s , %s]" % (str(self.pos), str(self.energy))
-
-
-
-
-
-
-

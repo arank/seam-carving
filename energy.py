@@ -19,7 +19,7 @@ def e1(pixel, neighbors):
         pixel.energy = fabs(dx) + fabs(dy)
 
         pixel.recalculate = False
-        
+
         return pixel
 
 #gets energy using entropy algorithm. helper methods may be added later
