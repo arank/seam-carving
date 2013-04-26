@@ -85,8 +85,6 @@ class sc_Image:
                         data [i] = data [replace_with]
                         break
 
-
-
         return data
 
     def get_pixel(self, pos):
@@ -94,20 +92,6 @@ class sc_Image:
             return self.pixels[pos]
         else:
             return None
-
-    def get_grayscale_pixels(self):
-        def convert_one(p):
-            if isinstance (p.rgb, int):
-                return p
-            r, g, b = p.rgb
-            gray = r + 256*g + (256^2)*b
-            return Pixel(p.pos, gray)
-
-        gray_pixels = {}
-        for h in range(self.height):
-            for w in range(self.width):
-                gray_pixels[(w,h)] = convert_one(self.pixels[(w,h)])
-        return gray_pixels
 
 
     # sets the energies of each pixel using the specified algorithm
@@ -171,8 +155,8 @@ class sc_Image:
 
     def to_energy_pic (self, filepath):
 
-        #pixels, w,h = from_pil (to_grayscale(self.PIL))
-        #self.pixels = pixels
+        pixels, w,h = from_pil (to_grayscale(self.PIL))
+        self.pixels = pixels
         self.set_energies('e1')
 
         data = [0] * (self.width * self.height)
@@ -184,29 +168,29 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
     #removes a seam from the image
-    def remove_seam_vert (self,  alg) :
-        seam = self.get_next_seam(alg, 'vertical')
-        to_remove = map ( lambda p:  p.pos , filter(None, seam))
-        new_pixels = {}
-        for h in range(self.height) :
-            decrement = False
-            for w in range (self.width):
-                if not decrement: 
-                    if not (w,h) in to_remove:
-                        new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
+    # def remove_seam_vert (self,  alg) :
+    #     seam = self.get_next_seam(alg, 'vertical')
+    #     to_remove = map ( lambda p:  p.pos , filter(None, seam))
+    #     new_pixels = {}
+    #     for h in range(self.height) :
+    #         decrement = False
+    #         for w in range (self.width):
+    #             if not decrement: 
+    #                 if not (w,h) in to_remove:
+    #                     new_pixels[self.pixels[(w,h)].pos] = self.pixels[(w,h)]
                         
-                    else:
+    #                 else:
 
-                        decrement = True
-                else:
-                    new_w = w-1; 
+    #                     decrement = True
+    #             else:
+    #                 new_w = w-1; 
 
-                    self.pixels[(w,h)].pos = (new_w,h)
-                    self.pixels[(w,h)].refresh_xy()
-                    new_pixels[(new_w,h)] = self.pixels[(w,h)]
+    #                 self.pixels[(w,h)].pos = (new_w,h)
+    #                 self.pixels[(w,h)].refresh_xy()
+    #                 new_pixels[(new_w,h)] = self.pixels[(w,h)]
 
-        self.pixels = new_pixels
-        self.width -= 1
+    #     self.pixels = new_pixels
+    #     self.width -= 1
 
         #self.to_jpeg("temp.jpg")
         #self.PIL = Image.open ("temp.jpg")
@@ -223,7 +207,6 @@ class sc_Image:
                     if (w,h) in to_remove:
                         decrement = True
                         self.recalculate_neighbors((w,h))
-                        #del self.pixels[(w,h)]
 
                 else:
                     self.pixels[(w,h)].dec_x()
@@ -232,11 +215,8 @@ class sc_Image:
 
             del self.pixels[self.width-1, h]
 
-            #print "(%s, %s)" % (w,h)
-
         self.width -= 1
 
-        self.check_for_mismatch()
 
 
     def check_for_mismatch(self):
