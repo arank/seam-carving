@@ -131,7 +131,10 @@ class sc_Image:
         if orientation == 'horizontal' : 
             raise NotImplementedError
         elif orientation == 'vertical' :
-            return seam_dijk(self, orientation)
+            if alg == 'dijk' :
+                return seam_dijk(self, orientation)
+            else :
+                return seam_dyn(self,orientation)
         else:
             raise Exception("Orientation must be vertical or horizontal" )
         return seam
@@ -171,6 +174,9 @@ class sc_Image:
     def remove_seam_vert2 (self, alg):
 
         seam = self.get_next_seam(alg, 'vertical')
+
+        print "To be removed: ",seam
+
         to_remove = map ( lambda p:  p.pos , filter(None, seam))
 
         for h in range(self.height):
@@ -183,7 +189,6 @@ class sc_Image:
 
                 else:
                     self.pixels[(w,h)].shift_pos(-1,0)
-                    #self.pixels[(w,h)].dec_x()
                     self.pixels[(w-1,h)] = self.pixels[(w,h)]
 
 
