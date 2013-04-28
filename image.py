@@ -1,5 +1,5 @@
 from energy import entropy
-from energy import Sobel_e1 as e1
+from energy import Sobel_op as e1
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
