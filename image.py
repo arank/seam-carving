@@ -89,16 +89,16 @@ class sc_Image:
 
         data = self.get_neighbors_simple(pos, pixels, dim)
 
-        #NEEDS FIXING FOR DIM
-        edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
-        3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]}
+        if (dim == 3):
+            edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
+            3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]}
         
-        for i in range(len(data)):
-            if data[i] is None:
-                for replace_with in edge_replace[i] : 
-                    if data[replace_with] is not None:
-                        data [i] = data [replace_with]
-                        break
+            for i in range(len(data)):
+                if data[i] is None:
+                    for replace_with in edge_replace[i] : 
+                        if data[replace_with] is not None:
+                            data [i] = data [replace_with]
+                            break
 
         return data
 
