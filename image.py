@@ -32,6 +32,7 @@ class sc_Image:
         self.width = dimensions[0]
         self.height = dimensions[1]
         self.pixels = pixels
+        self.dim = 3
         self.PIL = PIL
     
 
@@ -79,7 +80,7 @@ class sc_Image:
         return data
 
     def recalculate_neighbors(self, pos, dim):
-        for p in self.get_neighbors_simple (pos, self.pixels):
+        for p in self.get_neighbors_simple (pos, self.pixels, self.dim):
             if p is not None:
                 p.to_recalculate()
 
@@ -126,18 +127,21 @@ class sc_Image:
         #print self.pixels[(127,107)
 
         def set_energy_e1 (pixel):
+            self.dim = 3
             if pixel.recalculate :
                 return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels,3) )
             else :
                 return pixel
 
         def set_energy_e1_five (pixel) :
+            self.dim = 5
             if pixel.recalculate :
                 return e1_five (pixel, self.get_five_neighbors (pixel.pos,temp_pix) )
             else :
                 return pixel
 
         def set_energy_entropy(pixel):
+            self.dim = 9
             if pixel.recalculate :
                 return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,9) )
             else :
@@ -254,7 +258,7 @@ class sc_Image:
                 if not decrement:
                     if (w,h) in to_remove:
                         decrement = True
-                        self.recalculate_neighbors((w,h))
+                        self.recalculate_neighbors((w,h), self.dim)
 
                 else:
                     self.pixels[(w,h)].shift_pos(-1,0)
@@ -326,9 +330,9 @@ class sc_Image:
 
     def transpose (self) :
         new_pix = {}
-        for i in range(image.width):
-            for j in range(image.height):
-                new_pix[(j,i)]=new Pixel( (j,i), self.pixels[(i,j)] )
+        for i in range(self.width):
+            for j in range(self.height):
+                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)].rgb )
         self.pixels = new_pix
         tmp = self.height
         self.height = self.width
