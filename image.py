@@ -293,32 +293,40 @@ class sc_Image:
     def insert_seam(pixels, seam):
         raise NotImplementedError
 
-    def get_n_seams(n, orientation ) :
+    def get_n_seams(self,n, energy, alg) :
+
         seams = []
         for i in range(n):
             self.set_energies(energy)
-            if orientation == 'vertical':
-                seams.append(self.remove_seam_vert2(alg))
+            seam = self.remove_seam_vert2(alg)
+            seams.append( map(self.get_pixel, seam) )
+
         return seams
 
     #calculate the lowest energy seams then add duplicates of them to the picture
-    def enlarge (self, orientation, new_pixels, energy = 'e1', alg = 'dijk'):
+    def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn'):
+
+        if orientation == 'horizontal' :
+            self.transpose()
+
 
         original_pixels = self.pixels
 
-        seams = self.get_n_seams(new_pixels, orientation)
+        seams = self.get_n_seams(new_pixels, energy, alg)
        
-
-
-
         for s in seams:
-            insert_seam(original_pixels, s)
+            print s
+            #insert_seam(original_pixels, s)
+
+        if orientation == 'horizontal' :
+            self.transpose()
 
 
 
     # shrinks a picture by continouslly removing the lowest energy seem
-    def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dijk'):
+    def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dyn'):
 
+        #if we are taking horizontal seams transpose the image first
         if orientation == 'horizontal' :
             self.transpose()
 
