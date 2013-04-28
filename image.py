@@ -129,7 +129,7 @@ class sc_Image:
         def set_energy_e1 (pixel):
             self.dim = 3
             if pixel.recalculate :
-                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels,3) )
+                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
             else :
                 return pixel
 
@@ -143,7 +143,7 @@ class sc_Image:
         def set_energy_entropy(pixel):
             self.dim = 9
             if pixel.recalculate :
-                return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,9) )
+                return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
             else :
                 return pixel
 
@@ -230,7 +230,7 @@ class sc_Image:
         original_pixels = self.pixels
         gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
         self.pixels = gray_pixels
-        self.set_energies('e1')
+        self.set_energies('entropy')
 
         data = [0] * (self.width * self.height)
         for w in range (self.width):

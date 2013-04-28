@@ -1,4 +1,4 @@
-from math import fabs
+from math import fabs, log
 #gets energy using e1 algorithm. helper methods may be added later
 
 def three_three_filter(pixel, neighbors, a, b):
@@ -51,20 +51,21 @@ def Scharr_five_op(pixel, neighbors):
     return five_five_filter(pixel, neighbors, 6, 3, 2, 2, 1, 1)
 #gets energy using entropy algorithm. helper methods may be added later
 def entropy(pixel, square):
-        hist_len = square.length
-	dim = sqrt(hist_len)
-	histogram = {}
-	for x in range (hist_len):
-                try:
-                       histogram[square[x]] += 1
-                except KeyError: 
-                       histogram[square[x]] = 1
-        square_prob = [float(v)/hist_len for k, v in d.iteritems()]
+    print pixel.pos
+    hist_len = len(square)
+    dim = hist_len**(.5)
+    histogram = {}
+    for x in range (hist_len):
+        try:
+            histogram[square[x]] += 1
+        except KeyError: 
+            histogram[square[x]] = 1
+    square_prob = [float(v)/hist_len for k, v in histogram.iteritems()]
 
-        #Shannon entropy formula with a base 2 log. Source:
-        #http://upload.wikimedia.org/math/8/7/e/87efdf0d38947240683250d3a24466e0.png
-        pixel.energy = -sum([p*(math.log(p, 2)) for p in square_prob])
+    #Shannon entropy formula with a base 2 log. Source:
+    #http://upload.wikimedia.org/math/8/7/e/87efdf0d38947240683250d3a24466e0.png
+    pixel.energy = -sum([p*(log(p, 2)) for p in square_prob])
 
-        pixel.recalculate = False
+    pixel.recalculate = False
 
-        return pixel
+    return pixel
