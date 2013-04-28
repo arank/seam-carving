@@ -51,7 +51,6 @@ def Scharr_five_op(pixel, neighbors):
     return five_five_filter(pixel, neighbors, 6, 3, 2, 2, 1, 1)
 #gets energy using entropy algorithm. helper methods may be added later
 def entropy(pixel, square):
-    print pixel.pos
     hist_len = len(square)
     dim = hist_len**(.5)
     histogram = {}
@@ -65,7 +64,6 @@ def entropy(pixel, square):
     #Shannon entropy formula with a base 2 log. Source:
     #http://upload.wikimedia.org/math/8/7/e/87efdf0d38947240683250d3a24466e0.png
     pixel.energy = -sum([p*(log(p, 2)) for p in square_prob])
-
     pixel.recalculate = False
 
     return pixel

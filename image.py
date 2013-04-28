@@ -6,7 +6,6 @@ from random import randrange
 
 import Image
 
-
 def to_grayscale (img):
     return img.convert("L")
 
