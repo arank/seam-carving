@@ -193,7 +193,6 @@ class sc_Image:
                     self.pixels[(w,h)].shift_pos(-1,0)
                     self.pixels[(w-1,h)] = self.pixels[(w,h)]
 
-
             del self.pixels[self.width-1, h]
 
         self.width -= 1

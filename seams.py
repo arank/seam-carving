@@ -168,23 +168,23 @@ def seam_dyn (image, dir) :
    
     for i in range(0, image.height) :
         ind = min_index(0, [ans[0], ans[1]])
-        paths[i][0]= ind
-        ans[0]=ans[ind]+image.pixels[(i,0)].energy
+        paths[0][i]= ind
+        ans[0]=ans[ind]+image.pixels[(0,i)].energy
 
         for j in range(1, image.width-1) :
             ind = min_index(j, [ans[j-1],ans[j],ans[j+1]])
-            paths[i][j]=ind-1
-            ans[j]=ans[ind-1]+image.pixels[(i,j)].energy
+            paths[j][i]=ind-1
+            ans[j]=ans[ind-1]+image.pixels[(j,i)].energy
         
         ind=min_index(image.width-1, [ans[image.width-2],ans[image.width-1]])
-        paths[i][image.width-1]=ind-1    
-        ans[image.width-1] = ans[ind-1]+image.pixels[(i,image.width-1)].energy
+        paths[image.width-1][i]=ind-1    
+        ans[image.width-1] = ans[ind-1]+image.pixels[(image.width-1,i)].energy
 
     ind = min_index(0, ans)
 
     for i in range(image.height-1,-1,-1):
-        seam.append((i,ind))
-        ind = paths[i][ind]
+        seam.append((ind,i))
+        ind = paths[ind][i]
 
     return seam
 
