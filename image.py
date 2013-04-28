@@ -1,5 +1,5 @@
 from energy import entropy
-from energy import Sobel_op as e1
+from energy import Kroon_op as e1
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
@@ -15,7 +15,14 @@ def from_pil ( im):
     data = im.getdata()
     for w in range (width):
         for h in range (height):
-            pixels[(w,h)] = Pixel( (w,h), data[ h * width + w]  )
+
+            color = data[ h * width + w]
+            #we are working with a color image for the normal picture
+            if isinstance (color, tuple) :
+                pixels[(w,h)] = Pixel( (w,h), color  )
+            #we are working with a grayscale image for the energy picture
+            elif isinstance (color, int) :
+                pixels[(w,h)] = Pixel( (w,h), (0,0,0), gray = color  )
     return pixels, width, height
 
 #representation of an image for seam carving
@@ -165,10 +172,11 @@ class sc_Image:
         im.putdata(data)
         im.save(filepath, "JPEG")
 
+    #Uses the grayscale of the image to get an energy map
     def to_energy_pic (self, filepath):
-
-        pixels, w,h = from_pil (to_grayscale(self.PIL))
-        self.pixels = pixels
+        original_pixels = self.pixels
+        gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
+        self.pixels = gray_pixels
         self.set_energies('e1')
 
         data = [0] * (self.width * self.height)
@@ -178,6 +186,8 @@ class sc_Image:
         im = Image.new("L", (self.width, self.height))
         im.putdata(data)
         im.save(filepath, "JPEG")
+
+        self.pixels = original_pixels
 
 
     def remove_seam_vert2 (self, alg):
@@ -269,13 +279,16 @@ class sc_Image:
 
 
 class Pixel:
-    def __init__(self, pos, rgb): 
+    def __init__(self, pos, rgb, gray = None): 
         self.pos = pos
         self.original_pos = pos
         self.rgb = rgb
 
-        r, g, b = self.rgb
-        self.gray =  r + 256 * g + (256^2) * b
+        if gray is None:
+            r, g, b = self.rgb
+            self.gray =  r + 256 * g + (256^2) * b
+        else:
+            self.gray = gray
 
         self.energy = 0
 
