@@ -67,7 +67,6 @@ class sc_Image:
         self.width = tmp        
 
     def get_neighbors_simple (self, pos, pixels, dim):
-        
         x, y = pos
         data = []
         for j in range(y+(dim/2), y-(dim/2+1), -1):
@@ -102,6 +101,16 @@ class sc_Image:
 
         return data
 
+    def get_five_neighbors (self, pos, pixels) :
+
+        x, y = pos
+        data = []
+        for j in range(y+2, y-3, -1):
+            for i in range(x-2,x+3):
+                data.append(pixels[(i,j)])
+        return data
+
+
     def get_pixel(self, pos):
         if pos in self.pixels:
             return self.pixels[pos]
@@ -121,6 +130,12 @@ class sc_Image:
             else :
                 return pixel
 
+        def set_energy_e1_five (pixel) :
+            if pixel.recalculate :
+                return e1_five (pixel, self.get_five_neighbors (pixel.pos,temp_pix) )
+            else :
+                return pixel
+
         def set_energy_entropy(pixel):
             if pixel.recalculate :
                 return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,9) )
@@ -131,7 +146,38 @@ class sc_Image:
         if algorithm == 'e1':
             map (set_energy_e1 ,self.pixels.values() ) 
 
-        elif algorithm == 'ent':
+        elif algorithm == 'e1_five':
+            temp_pix = self.pixels
+
+            for h in [-2. -1, image.height +1, image.height +2] : 
+                for w in range(image.width):
+                    if h == -1 or h == -2:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, 0)].rgb )
+                    else:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height)].rgb )
+
+            for w in [-2, -1, image.width +1, image.width +2] :
+                for h in range(-2, image.height + 2)
+                    if w == -1 or w == -2:
+                        if h == -1 or -2:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,0)].rgb )
+                        elif h == image.height + 1 or h == image.height + 2:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height)].rgb )
+                        else:
+                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(0, h)].rgb )
+                    else:
+                        if h == -1 or -2:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width,0)].rgb )
+                        elif h == image.height + 1 or h == image.height + 2:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width,self.height)].rgb)
+                        else:
+                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width, h)].rgb )
+
+            for h in range(self.height):
+                for w in range(self.width):
+                    set_energy_e1_five( temp_pix[(w,h)] )
+
+        elif algorithm == 'entropy':
             map (set_energy_entropy ,self.pixels.values() ) 
 
         else:
