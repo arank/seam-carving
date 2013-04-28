@@ -151,31 +151,40 @@ def seam_dijk (image, dir) :
 #helper methods may be added later
 def seam_dyn (image, dir) :
     seam=[]
-    ans = [0]*(image.width)#make 2d
-    arr = [[0 for x in range(image.height)] for y in range(image.width)]
+
+
+    print image.width, image.height
+    #height = 128
+
+    #answer to the previous subproblem
+    #make 2d
+    ans = [0]*(image.width)
+
+    #array storing the paths
+    paths = [[0 for x in range(image.height)] for y in range(image.width)]
 
     def min_index (j, a):
         return j+(a.index(min(a)))
    
     for i in range(0, image.height) :
         ind = min_index(0, [ans[0], ans[1]])
-        arr[i][0]=ind
+        paths[i][0]= ind
         ans[0]=ans[ind]+image.pixels[(i,0)].energy
 
         for j in range(1, image.width-1) :
             ind = min_index(j, [ans[j-1],ans[j],ans[j+1]])
-            arr[i][j]=ind-1
+            paths[i][j]=ind-1
             ans[j]=ans[ind-1]+image.pixels[(i,j)].energy
         
         ind=min_index(image.width-1, [ans[image.width-2],ans[image.width-1]])
-        arr[i][image.width-1]=ind-1    
+        paths[i][image.width-1]=ind-1    
         ans[image.width-1] = ans[ind-1]+image.pixels[(i,image.width-1)].energy
 
     ind = min_index(0, ans)
 
     for i in range(image.height-1,-1,-1):
         seam.append((i,ind))
-        ind = arr[i][ind]
+        ind = paths[i][ind]
 
     return seam
 

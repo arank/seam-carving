@@ -1,4 +1,5 @@
-from energy import e1, entropy
+from energy import entropy
+from energy import Sobel_e1 as e1
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
@@ -175,9 +176,10 @@ class sc_Image:
 
         seam = self.get_next_seam(alg, 'vertical')
 
-        print "To be removed: ",seam
+        #print "To be removed: ",seam
 
-        to_remove = map ( lambda p:  p.pos , filter(None, seam))
+        to_remove = seam
+        #to_remove = map ( lambda p:  p.pos , filter(None, seam))
 
         for h in range(self.height):
             decrement = False
@@ -217,17 +219,22 @@ class sc_Image:
     def insert_seam(pixels, seam):
         raise NotImplementedError
 
+    def get_n_seams(n, orientation ) :
+        seams = []
+        for i in range(n):
+            self.set_energies(energy)
+            if orientation == 'vertical':
+                seams.append(self.remove_seam_vert2(alg))
+        return seams
+
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self, orientation, new_pixels, energy = 'e1', alg = 'dijk'):
 
         original_pixels = self.pixels
 
-        seams = []
-        for i in range(new_pixels):
-            self.set_energies(energy)
+        seams = self.get_n_seams(new_pixels, orientation)
+       
 
-            if orientation == 'vertical':
-                seams.append(self.remove_seam_vert2(alg))
 
 
         for s in seams:
