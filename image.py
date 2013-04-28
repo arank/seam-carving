@@ -66,8 +66,6 @@ class sc_Image:
         self.height = self.width
         self.width = tmp        
 
-
-
     def get_neighbors_simple (self, pos, pixels):
 
         x, y = pos
