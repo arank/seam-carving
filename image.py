@@ -283,6 +283,9 @@ class sc_Image:
             for j in range(image.height):
                 new_pix[(j,i)]=new Pixel( (j,i), self.pixels[(i,j)] )
         self.pixels = new_pix
+        tmp = self.height
+        self.height = self.width
+        self.width = tmp
 
 class Pixel:
     def __init__(self, pos, rgb, gray = None): 
