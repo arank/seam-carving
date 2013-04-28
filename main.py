@@ -11,3 +11,4 @@ im.shrink(1, alg = 'dyn', energy = "entropy")
 im.to_jpeg("dolphin_kroon.jpg")
 
 
+

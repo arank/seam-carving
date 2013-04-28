@@ -9,7 +9,8 @@ import Image
 def to_grayscale (img):
     return img.convert("L")
 
-def from_pil ( im):
+def from_pil (im):
+    this_id = 0
     pixels = {}
     width, height = im.size
     data = im.getdata()
@@ -19,7 +20,9 @@ def from_pil ( im):
             color = data[ h * width + w]
             #we are working with a color image for the normal picture
             if isinstance (color, tuple) :
-                pixels[(w,h)] = Pixel( (w,h), color  )
+                pixels[(w,h)] = Pixel( (w,h), color, id = this_id  )
+                this_id += 1
+
             #we are working with a grayscale image for the energy picture
             elif isinstance (color, int) :
                 pixels[(w,h)] = Pixel( (w,h), (0,0,0), gray = color  )
@@ -40,6 +43,7 @@ class sc_Image:
         """ Given an image file turns into an sc_Image class.
         eventually replace the im.getpixels calls with an im.getdata for performance reasons
         """
+
         pixels = {}
         im = Image.open (filepath)
         width, height = im.size
@@ -53,6 +57,7 @@ class sc_Image:
         """ Given an image file turns into an sc_Image class.
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
+
         im = Image.open (filepath)
         pixels, width, height = from_pil(im)
         return cls ((width, height), pixels, im)
@@ -61,11 +66,11 @@ class sc_Image:
         new_pix = {}
         for i in range(self.width):
             for j in range(self.height):
-                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)].rgb )
+                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)].rgb, id = self.pixels[(i,j)].id )
         self.pixels = new_pix
         tmp = self.height
         self.height = self.width
-        self.width = tmp        
+        self.width = tmp
 
     def get_neighbors_simple (self, pos, pixels, dim):
         x, y = pos
@@ -338,16 +343,23 @@ class sc_Image:
         self.width = tmp
 
 class Pixel:
-    def __init__(self, pos, rgb, gray = None): 
+    def __init__(self, pos, rgb, gray = None, id = None): 
         self.pos = pos
         self.original_pos = pos
         self.rgb = rgb
 
+        #if gray wasn't explicitly set initialize it based off color
         if gray is None:
             r, g, b = self.rgb
             self.gray =  r + 256 * g + (256^2) * b
         else:
             self.gray = gray
+
+        #if id wasn't explicity set initialize it to a dummy value
+        if id is None:
+            self.id = -1
+        else:
+            self.id = id
 
         self.energy = 0
 
