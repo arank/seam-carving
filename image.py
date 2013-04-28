@@ -1,5 +1,6 @@
 from energy import entropy
-from energy import Kroon_op as e1
+from energy import Sobel_op as e1
+from energy import Sobel_five_op as e1_five
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
@@ -149,29 +150,29 @@ class sc_Image:
         elif algorithm == 'e1_five':
             temp_pix = self.pixels
 
-            for h in [-2. -1, image.height +1, image.height +2] : 
-                for w in range(image.width):
+            for h in [-2, -1, self.height, self.height +1] : 
+                for w in range(self.width):
                     if h == -1 or h == -2:
                         temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, 0)].rgb )
                     else:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height)].rgb )
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height -1)].rgb )
 
-            for w in [-2, -1, image.width +1, image.width +2] :
-                for h in range(-2, image.height + 2)
+            for w in [-2, -1, self.width, self.width +1]:
+                for h in range(-2, self.height + 2):
                     if w == -1 or w == -2:
                         if h == -1 or -2:
                             temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,0)].rgb )
-                        elif h == image.height + 1 or h == image.height + 2:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height)].rgb )
+                        elif h == self.height or h == self.height + 1:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height-1)].rgb )
                         else:
                             temp_pix[(w,h)] = Pixel((w,h), self.pixels[(0, h)].rgb )
                     else:
                         if h == -1 or -2:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width,0)].rgb )
-                        elif h == image.height + 1 or h == image.height + 2:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width,self.height)].rgb)
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,0)].rgb )
+                        elif h == self.height or h == self.height + 1:
+                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
                         else:
-                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width, h)].rgb )
+                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb )
 
             for h in range(self.height):
                 for w in range(self.width):
