@@ -51,14 +51,14 @@ def Scharr_five_op(pixel, neighbors):
     return five_five_filter(pixel, neighbors, 6, 3, 2, 2, 1, 1)
 #gets energy using entropy algorithm. helper methods may be added later
 def entropy(pixel, square):
+    num_bins = 10
+    pix_range = 16844000
+    b = pix_range/num_bins
     hist_len = len(square)
     dim = hist_len**(.5)
-    histogram = {}
+    histogram = {b:0, 2*b:0, 3*b:0, 4*b:0, 5*b:0, 6*b:0, 7*b:0, 8*b:0, 9*b:0, 10*b:0}
     for x in range (hist_len):
-        try:
-            histogram[square[x]] += 1
-        except KeyError: 
-            histogram[square[x]] = 1
+        v+=1 for k, v in d.items() if square[x]<k
     square_prob = [float(v)/hist_len for k, v in histogram.iteritems()]
 
     #Shannon entropy formula with a base 2 log. Source:
