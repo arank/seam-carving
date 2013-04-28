@@ -1,11 +1,7 @@
 import heapq
 
-class Seam :
-    def __init__ (self, pixels) :
-        self.pixels = pixels
-        self.energy = energy
-        self.removed = false
 
+# test heap from standard pyhton lib for comaprison tests
 class TestHeap :
     def __init__(self):
         self.h = []
@@ -19,12 +15,15 @@ class TestHeap :
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 
+# min heap that stores edges for djikstras algorithm, given constant time
+# lookup and log insert
 class Heap :
 
     def __init__(self):
 
         self.list = []
 
+    # gets childeren of the given heap branch
     def get_children(self, p) :
         if p*2+1 > (len(self.list)-1) :
             return []
@@ -33,11 +32,13 @@ class Heap :
         else :
             return [p*2+1, p*2+2]
 
+    # swaps two elements in heap tree
     def switch(self, p1, p2) :
         t = self.list[p1]
         self.list[p1] = self.list[p2]
         self.list[p2] = t
 
+    # bubbles up an element
     def b_up(self, p) :
         if p == 0 :
             return
@@ -48,7 +49,7 @@ class Heap :
         if self.list[par] > self.list[p] :
             self.switch(par,p)
             self.b_up(par)
-
+    #  pushes down an element
     def b_down(self, p) :
         c = self.get_children(p)
         if len(c) == 1 :
@@ -62,24 +63,25 @@ class Heap :
                 else :
                     self.switch(p,c[1])
                     self.b_down(c[1])
-
+    # inserts element into heap
     def add (self, edge) :
         self.list.append(edge)
         self.b_up (len(self.list)-1)
-
+    # removes and returns the top edge from the heap
     def get_top (self) :
         val = self.list[0]
         self.list[0] = self.list.pop()
         self.b_down(0)
         return val
-
+# encapulates data that helps build the pixle array into a graph of valid directed paths
+# with edge weights corresponding to energies of pixles
 class Edge :
     def __init__(self, source, sink, weight):
 
         self.source = source
         self.sink = sink
         self.weight = weight
-
+    # comapre function for use in heap comparisons
     def __cmp__(self,other):
         return (self.weight - other.weight)
     
@@ -87,12 +89,14 @@ class Edge :
 
         return "[%s]" % str(self.weight)
 
-def seam_dijk (image, dir) :
+# djikstras algorithm
+def seam_dijk (image) :
     heap = TestHeap ()
     path =[]
     dic = {}
     prev ={}
 
+    # extracts and returns final path from the path array
     def get_path(node) :
         path.append(prev[node])
         if prev[node] is None:
@@ -149,7 +153,7 @@ def seam_dijk (image, dir) :
 
 # calculates the lowest seam starting at a given pixel with dynamic programming
 #helper methods may be added later
-def seam_dyn (image, dir) :
+def seam_dyn (image) :
     seam=[]
 
     #height = 128
@@ -161,6 +165,7 @@ def seam_dyn (image, dir) :
     #array storing the paths
     paths = [[0 for x in range(image.height)] for y in range(image.width)]
 
+    # gets the minimum index in a list of numbers given with an offset built in and defined by j
     def min_index (j, a):
         return j+(a.index(min(a)))
    
