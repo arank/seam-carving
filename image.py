@@ -66,34 +66,33 @@ class sc_Image:
         self.height = self.width
         self.width = tmp        
 
-    def get_neighbors_simple (self, pos, pixels):
-
+    def get_neighbors_simple (self, pos, pixels, dim):
+        
         x, y = pos
         data = []
-        for j in range(y+1, y-2, -1):
-            for i in range(x-1,x+2):
+        for j in range(y+(dim/2), y-(dim/2+1), -1):
+            for i in range(x-(dim/2),x+(dim/2+1)):
                 try:
                     data.append(pixels[(i,j)])
                 except KeyError:
                     data.append(None)
         return data
 
-    def recalculate_neighbors(self, pos):
+    def recalculate_neighbors(self, pos, dim):
         for p in self.get_neighbors_simple (pos, self.pixels):
             if p is not None:
                 p.to_recalculate()
 
 
-    # gets the 3x3square of pixels of the pixel at pos for e1 function
-    def get_neighbors (self, pos, pixels):
+    # gets the dim x dim square of pixels of the pixel at pos for energy functions
+    def get_neighbors (self, pos, pixels, dim):
 
-        data = self.get_neighbors_simple(pos, pixels)
+        data = self.get_neighbors_simple(pos, pixels, dim)
 
+        #NEEDS FIXING FOR DIM
         edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
-        3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]
-        }
-
-
+        3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]}
+        
         for i in range(len(data)):
             if data[i] is None:
                 for replace_with in edge_replace[i] : 
@@ -118,18 +117,21 @@ class sc_Image:
 
         def set_energy_e1 (pixel):
             if pixel.recalculate :
-                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels) )
+                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels,3) )
             else :
                 return pixel
 
         def set_energy_entropy(pixel):
-            raise NotImplementedError
+            if pixel.recalculate :
+                return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,9) )
+            else :
+                return pixel
 
         #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
         if algorithm == 'e1':
             map (set_energy_e1 ,self.pixels.values() ) 
 
-        elif algorithm == 'entropy':
+        elif algorithm == 'ent':
             map (set_energy_entropy ,self.pixels.values() ) 
 
         else:
