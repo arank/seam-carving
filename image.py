@@ -246,6 +246,12 @@ class sc_Image:
 
             print i
 
+    def transpose (self) :
+        new_pix = {}
+        for i in range(image.width):
+            for j in range(image.height):
+                new_pix[(j,i)]=new Pixel( (j,i), self.pixels[(i,j)] )
+        self.pixels = new_pix
 
 
 class Pixel:
