@@ -49,7 +49,15 @@ class sc_Image:
         pixels, width, height = from_pil(im)
         return cls ((width, height), pixels, im)
 
-        
+    def transpose (self) :
+        new_pix = {}
+        for i in range(image.width):
+            for j in range(image.height):
+                new_pix[(j,i)]=new Pixel( (j,i), self.pixels[(i,j)] )
+        self.pixels = new_pix
+        tmp = self.height
+        self.height = self.width
+        self.width = tmp        
 
     def get_neighbors_simple (self, pos, pixels):
 
@@ -244,23 +252,20 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dijk'):
 
+        if orientation == 'horizontal' :
+            self.transpose
+
         for i in range(to_remove) :
             self.set_energies (energy)
 
-            if orientation == 'vertical' :
-                seam = self.remove_seam_vert2 (alg)
+            seam = self.remove_seam_vert2 (alg)
 
             print i
 
-    def transpose (self) :
-        new_pix = {}
-        for i in range(image.width):
-            for j in range(image.height):
-                new_pix[(j,i)]=new Pixel( (j,i), self.pixels[(i,j)] )
-        self.pixels = new_pix
-        tmp = self.height
-        self.height = self.width
-        self.width = tmp
+        if orientation == 'horizontal' :
+            self.transpose        
+
+    
 
 
 class Pixel:
