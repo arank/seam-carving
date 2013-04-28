@@ -58,13 +58,15 @@ class sc_Image:
 
     def transpose (self) :
         new_pix = {}
-        for i in range(image.width):
-            for j in range(image.height):
-                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)] )
+        for i in range(self.width):
+            for j in range(self.height):
+                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)].rgb )
         self.pixels = new_pix
         tmp = self.height
         self.height = self.width
         self.width = tmp        
+
+
 
     def get_neighbors_simple (self, pos, pixels):
 
@@ -263,7 +265,7 @@ class sc_Image:
     def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dijk'):
 
         if orientation == 'horizontal' :
-            self.transpose
+            self.transpose()
 
         for i in range(to_remove) :
             self.set_energies (energy)
@@ -273,7 +275,7 @@ class sc_Image:
             print i
 
         if orientation == 'horizontal' :
-            self.transpose        
+            self.transpose()        
 
     
 
