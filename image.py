@@ -1,6 +1,4 @@
-from energy import entropy
-from energy import Sobel_op as e1
-from energy import Sobel_five_op as e1_five
+import energy
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
@@ -98,16 +96,6 @@ class sc_Image:
 
         return data
 
-    def get_five_neighbors (self, pos, pixels) :
-
-        x, y = pos
-        data = []
-        for j in range(y+2, y-3, -1):
-            for i in range(x-2,x+3):
-                data.append(pixels[(i,j)])
-        return data
-
-
     def get_pixel(self, pos):
         if pos in self.pixels:
             return self.pixels[pos]
@@ -116,37 +104,64 @@ class sc_Image:
 
 
     # sets the energies of each pixel using the specified algorithm
-    def set_energies (self, algorithm) :
+    def set_energies (self, algorithm = 'sobel') :
         #map the energy calculating function to the pixel objects
 
         #print self.pixels[(127,107)
 
-        def set_energy_e1 (pixel):
+        def set_energy_e1_Sobel (pixel):
             self.dim = 3
             if pixel.recalculate :
-                return e1 (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.Sobel_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
             else :
                 return pixel
 
-        def set_energy_e1_five (pixel) :
+        def set_energy_e1_Scharr (pixel):
+            self.dim = 3
+            if pixel.recalculate :
+                return energy.Scharr_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+            else :
+                return pixel
+            
+        def set_energy_e1_Kroon (pixel):
+            self.dim = 3
+            if pixel.recalculate :
+                return energy.Kroon_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+            else :
+                return pixel
+
+        def set_energy_e1_Sobel_5 (pixel) :
             self.dim = 5
             if pixel.recalculate :
-                return e1_five (pixel, self.get_five_neighbors (pixel.pos,temp_pix) )
+                return energy.Sobel_five_op (pixel, self.get_neighbors (pixel.pos,temp_pix, self.dim) )
+            else :
+                return pixel
+            
+        def set_energy_e1_Scharr_5 (pixel) :
+            self.dim = 5
+            if pixel.recalculate :
+                return energy.Scharr_five_op (pixel, self.get_neighbors (pixel.pos,temp_pix, self.dim) )
             else :
                 return pixel
 
         def set_energy_entropy(pixel):
             self.dim = 9
             if pixel.recalculate :
-                return entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
             else :
                 return pixel
 
         #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
-        if algorithm == 'e1':
+        if algorithm == 'sobel':
+            map (set_energy_e1 ,self.pixels.values() )
+
+        if algorithm == 'scharr':
+            map (set_energy_e1 ,self.pixels.values() )
+
+        if algorithm == 'kroon':
             map (set_energy_e1 ,self.pixels.values() ) 
 
-        elif algorithm == 'e1_five':
+        elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
             temp_pix = self.pixels
 
             for h in [-2, -1, self.height, self.height +1] : 
@@ -175,7 +190,10 @@ class sc_Image:
 
             for h in range(self.height):
                 for w in range(self.width):
-                    set_energy_e1_five( temp_pix[(w,h)] )
+                    if algorithm == 'sobel5':
+                        set_energy_e1_Sobel_5( temp_pix[(w,h)] )
+                    if algorithm == 'scharr5':
+                        set_energy_e1_Scharr_5( temp_pix[(w,h)] )
 
         elif algorithm == 'entropy':
             map (set_energy_entropy ,self.pixels.values() ) 
