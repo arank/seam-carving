@@ -3,6 +3,11 @@ seam-carving
 
 Seam Carving (CS51 Project)
 
+
+To run: Edit main.py to perform the seam carving operations. Example code is provided in the file and
+test images are in the main directory.
+
+
 Our project is implemented in the form of a class, sc_Image (seam-carving image).
 
 To use our seam carving methods on image, the first step is creating an sc_Image object. 

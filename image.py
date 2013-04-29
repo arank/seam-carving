@@ -153,13 +153,13 @@ class sc_Image:
 
         #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
         if algorithm == 'sobel':
-            map (set_energy_e1 ,self.pixels.values() )
+            map (set_energy_e1_Sobel ,self.pixels.values() )
 
-        if algorithm == 'scharr':
-            map (set_energy_e1 ,self.pixels.values() )
+        elif algorithm == 'scharr':
+            map (set_energy_e1_Scharr ,self.pixels.values() )
 
-        if algorithm == 'kroon':
-            map (set_energy_e1 ,self.pixels.values() ) 
+        elif algorithm == 'kroon':
+            map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
             temp_pix = self.pixels
@@ -359,6 +359,7 @@ class sc_Image:
 
             print "Got %d seams" % (i+1)
 
+        print "Enlarging image..."
         return seams
 
     #calculate the lowest energy seams then add duplicates of them to the picture
