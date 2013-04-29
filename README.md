@@ -3,9 +3,10 @@ seam-carving
 
 Seam Carving (CS51 Project)
 
+Dependency: Python Imaging Library (PIL)
 
-To run: Edit main.py to perform the seam carving operations. Example code is provided in the file and
-test images are in the main directory.
+To run: Edit main.py to specify the seam carving operations to be performed. Example code is provided in the file and
+test images are in the main directory. Then execute main.py ("python main.py" in a unix shell). 
 
 
 Our project is implemented in the form of a class, sc_Image (seam-carving image).
