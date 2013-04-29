@@ -436,8 +436,6 @@ class Pixel:
         else:
             self.gray = gray
 
-
-
         self.energy = 0
 
         self.recalculate = True

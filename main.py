@@ -25,3 +25,8 @@ im.to_jpeg("small_landscape.jpg")
 im = image.sc_Image.from_filepath2("skateboarder.jpg")
 im.enlarge(80,orientation = 'horizontal', energy = 'sobel', alg = 'dyn')
 im.to_jpeg("skateboarder_enlarged.jpg")
+#orientation can be 'vertical' or 'horizontal'
+
+
+
+
