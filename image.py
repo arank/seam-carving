@@ -307,30 +307,29 @@ class sc_Image:
 
             for w in range (self.width-1, -1, -1):
 
-                if not finished:
 
-                    if pixel.original_pos == (w,h):
+                if pixel.original_pos == (w,h):
+                
+                    pixel.pos = (w+1,h)
+                    pixels[(w+1,h)] = pixel
                     
-                        pixel.pos = (w+1,h)
-                        pixels[(w+1,h)] = pixel
-                        
-                        #update rgb value
-                        left = pixels[(w,h)].rgb
+                    #update rgb value
+                    left = pixels[(w,h)].rgb
 
-                        if (w+2,h) in pixels:
-                            right = pixels[(w+2,h)].rgb
-
-                        else :
-                            right  = pixel.rgb
-                        pixel.rgb = self.average_rbg(left, right)
-                        
-
-                        break
+                    if (w+2,h) in pixels:
+                        right = pixels[(w+2,h)].rgb
 
                     else :
-                        pixels[(w,h)].shift_pos(1,0)
+                        right  = pixel.rgb
+                    pixel.rgb = self.average_rbg(left, right)
+                    
 
-                        pixels[(w+1,h)] = pixels[(w,h)]
+                    break
+
+                else :
+                    pixels[(w,h)].shift_pos(1,0)
+
+                    pixels[(w+1,h)] = pixels[(w,h)]
 
 
 
