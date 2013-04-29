@@ -152,8 +152,6 @@ def seam_dijk (image, dir) :
 def seam_dyn (image, dir) :
     seam=[]
 
-
-    print image.width, image.height
     #height = 128
 
     #answer to the previous subproblem

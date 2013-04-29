@@ -5,7 +5,6 @@ from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
 import copy
-
 import Image
 
 def to_grayscale (img):
@@ -20,12 +19,12 @@ def from_pil (im):
         for h in range (height):
 
             color = data[ h * width + w]
-            #we are working with a color image for the normal picture
+            #we are working with a color image for the normal picture and have an rgb tuple
             if isinstance (color, tuple) :
-                pixels[(w,h)] = Pixel( (w,h), color, id = this_id  )
+                pixels[(w,h)] = Pixel( (w,h), color  )
                 this_id += 1
 
-            #we are working with a grayscale image for the energy picture
+            #we are working with a grayscale image for the energy picture and an int
             elif isinstance (color, int) :
                 pixels[(w,h)] = Pixel( (w,h), (0,0,0), gray = color  )
     return pixels, width, height
@@ -63,16 +62,6 @@ class sc_Image:
         im = Image.open (filepath)
         pixels, width, height = from_pil(im)
         return cls ((width, height), pixels, im)
-
-    def transpose (self) :
-        new_pix = {}
-        for i in range(self.width):
-            for j in range(self.height):
-                new_pix[(j,i)]= Pixel( (j,i), self.pixels[(i,j)].rgb, id = self.pixels[(i,j)].id )
-        self.pixels = new_pix
-        tmp = self.height
-        self.height = self.width
-        self.width = tmp
 
     def get_neighbors_simple (self, pos, pixels, dim):
         x, y = pos
@@ -232,11 +221,11 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
     #Uses the grayscale of the image to get an energy map
-    def to_energy_pic (self, filepath):
+    def to_energy_pic (self, filepath, energy = 'e1'):
         original_pixels = self.pixels
         gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
         self.pixels = gray_pixels
-        self.set_energies('entropy')
+        self.set_energies(energy)
 
         data = [0] * (self.width * self.height)
         for w in range (self.width):
@@ -323,12 +312,10 @@ class sc_Image:
                         right  = pixel.rgb
                     pixel.rgb = self.average_rbg(left, right)
                     
-
                     break
 
                 else :
                     pixels[(w,h)].shift_pos(1,0)
-
                     pixels[(w+1,h)] = pixels[(w,h)]
 
 
@@ -343,15 +330,16 @@ class sc_Image:
 
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
 
-
-
     def get_n_seams(self,n, energy, alg) :
+
 
         seams = []
         for i in range(n):
             self.set_energies(energy)
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
+
+            print "Got %d seams" % (i+1)
 
         return seams
 
@@ -388,19 +376,24 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dyn'):
 
+        counter = 0
+
         #if we are taking horizontal seams transpose the image first
         if orientation == 'horizontal' :
             self.transpose()
 
         for i in range(to_remove) :
+            counter += 1
             self.set_energies (energy)
 
             seam = self.remove_seam_vert2 (alg)
 
-            print i
+            print "Removed %d seams" % (counter)
 
         if orientation == 'horizontal' :
             self.transpose()    
+
+
 
     def transpose (self) :
         new_pix = {}
@@ -413,7 +406,7 @@ class sc_Image:
         self.width = tmp
 
 class Pixel:
-    def __init__(self, pos, rgb, gray = None, id = None): 
+    def __init__(self, pos, rgb, gray = None): 
         self.pos = pos
         self.original_pos = pos
         self.rgb = rgb
@@ -425,11 +418,7 @@ class Pixel:
         else:
             self.gray = gray
 
-        #if id wasn't explicity set initialize it to a dummy value
-        if id is None:
-            self.id = -1
-        else:
-            self.id = id
+
 
         self.energy = 0
 
