@@ -4,6 +4,8 @@ from energy import Sobel_five_op as e1_five
 from seams import Seam, seam_dijk, seam_dyn
 from random import randrange
 
+import copy
+
 import Image
 
 def to_grayscale (img):
@@ -247,13 +249,20 @@ class sc_Image:
         self.pixels = original_pixels
 
 
-    def remove_seam_vert2 (self, alg):
+    def remove_seam_vert2 (self, alg, return_pixels = False):
 
         seam = self.get_next_seam(alg, 'vertical')
 
         #print "To be removed: ",seam
 
         to_remove = seam
+
+        # copy all pixels to return later if needed
+        if return_pixels:
+            pixels = map( lambda p : copy.deepcopy (self.get_pixel(p)), seam)
+        else:
+            pixels = []
+
         #to_remove = map ( lambda p:  p.pos , filter(None, seam))
 
         for h in range(self.height):
@@ -272,7 +281,7 @@ class sc_Image:
 
         self.width -= 1
 
-        return seam
+        return pixels
 
 
     #debugging function that makes sure self.pixels is consistent
@@ -290,16 +299,60 @@ class sc_Image:
                     print "(%s, %s) is None" % (w,h)
 
 
-    def insert_seam(pixels, seam):
-        raise NotImplementedError
+    def insert_seam(self,pixels, seam):
+
+        for pixel in seam:
+
+            h = pixel.pos[1]
+
+            for w in range (self.width-1, -1, -1):
+
+                if not finished:
+
+                    if pixel.original_pos == (w,h):
+                    
+                        pixel.pos = (w+1,h)
+                        pixels[(w+1,h)] = pixel
+                        
+                        #update rgb value
+                        left = pixels[(w,h)].rgb
+
+                        if (w+2,h) in pixels:
+                            right = pixels[(w+2,h)].rgb
+
+                        else :
+                            right  = pixel.rgb
+                        pixel.rgb = self.average_rbg(left, right)
+                        
+
+                        break
+
+                    else :
+                        pixels[(w,h)].shift_pos(1,0)
+
+                        pixels[(w+1,h)] = pixels[(w,h)]
+
+
+
+
+        self.width += 1
+        return pixels
+
+    def average_rbg(self, rgb1, rgb2):
+        r1, g1, b1 = rgb1
+        r2, g2, b2 = rgb2
+
+        return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
+
+
 
     def get_n_seams(self,n, energy, alg) :
 
         seams = []
         for i in range(n):
             self.set_energies(energy)
-            seam = self.remove_seam_vert2(alg)
-            seams.append( map(self.get_pixel, seam) )
+            seam = self.remove_seam_vert2(alg, return_pixels = True)
+            seams.append( seam )
 
         return seams
 
@@ -310,13 +363,23 @@ class sc_Image:
             self.transpose()
 
 
-        original_pixels = self.pixels
+        original_pixels = copy.deepcopy(self.pixels)
+
+        original_width =self.width
+        original_height = self.height
 
         seams = self.get_n_seams(new_pixels, energy, alg)
+
+
+        self.width = original_width
+        self.height = original_height
+
        
         for s in seams:
-            print s
-            #insert_seam(original_pixels, s)
+            self.insert_seam(original_pixels, s)
+
+
+        self.pixels = original_pixels
 
         if orientation == 'horizontal' :
             self.transpose()
