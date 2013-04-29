@@ -8,8 +8,7 @@ im.to_energy_pic('landscape_energy.jpg')
 im.shrink(1, alg = 'dyn', energy = "entropy")
 # image.shrink( 'horizontal', 300 , 'e1', 'dyn')
 
-im.to_jpeg("dolphin_kroon.jpg")
 
 
-
+im.to_jpeg("dolphin_big.jpg")
 
