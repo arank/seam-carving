@@ -19,7 +19,7 @@ import image
 
 #Creating several energy maps of castle image
 
-# im = image.sc_Image.from_filepath2("castle.jpg")
+# im = image.sc_Image.from_filepath2("images/castle.jpg")
 # im.to_energy_pic('castle_sobel.jpg', 'sobel')
 # im.to_energy_pic('castle_scharr.jpg', 'scharr')
 # im.to_energy_pic('castle_kroon.jpg', 'kroon')
@@ -29,32 +29,32 @@ import image
 
 #enlarging landscape.jpg by 50 seams
 
-# im = image.sc_Image.from_filepath2("landscape.jpg")
+# im = image.sc_Image.from_filepath2("images/landscape.jpg")
 # im.enlarge(50 ,orientation = 'horizontal', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("landscape_enlarged.jpg")
+# im.to_jpeg("images/landscape_enlarged.jpg")
 
 #enlarging skateboarder by 80 pixels
 
-# im = image.sc_Image.from_filepath2("skateboarder.jpg")
+# im = image.sc_Image.from_filepath2("images/skateboarder.jpg")
 # im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("skateboarder_enlarged.jpg")
+# im.to_jpeg("images/skateboarder_enlarged.jpg")
 
 #enlargin plane by 80 pixels
 
-# im = image.sc_Image.from_filepath2("red_plane.jpg")
+# im = image.sc_Image.from_filepath2("images/red_plane.jpg")
 # im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("red_plane_enlarged.jpg")
+# im.to_jpeg("images/red_plane_enlarged.jpg")
 
 #shrinking sunset by 60 pixels
 
-# im = image.sc_Image.from_filepath2("sunset.jpeg")
+# im = image.sc_Image.from_filepath2("images/sunset.jpeg")
 # im.shrink(60,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("sunset_shrank.jpg")
+# im.to_jpeg("images/sunset_shrank.jpg")
 
 #shrinking dolphin by 60 pixels
 #some of his fin is cut off because it is similar in color to the sky
 
-# im = image.sc_Image.from_filepath2("dolphin.jpg")
+# im = image.sc_Image.from_filepath2("images/dolphin.jpg")
 # im.shrink(60,orientation = 'vertical', energy = 'sobel5', alg = 'dyn')
-# im.to_jpeg("dolphin_shrank.jpg")
+# im.to_jpeg("images/dolphin_shrank.jpg")
 
