@@ -239,7 +239,7 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
     #Uses the grayscale of the image to get an energy map
-    def to_energy_pic (self, filepath, energy = 'e1'):
+    def to_energy_pic (self, filepath, energy = 'sobel'):
         original_pixels = self.pixels
         gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
         self.pixels = gray_pixels
@@ -254,6 +254,33 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
         self.pixels = original_pixels
+
+
+    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn'):
+
+
+        original_pixels = copy.deepcopy(self.pixels)
+        original_width = self.width
+        original_height = self.height
+
+
+        seams = self.get_n_seams(n, energy, alg)
+
+        to_color = []
+        for seam in seams:
+            to_color.append(map (lambda p : p.original_pos , seam))
+        
+
+        for seam in to_color:
+            for pos in seam:
+                original_pixels[pos].rgb = (300,0,0)
+
+        self.pixels = original_pixels
+        self.width = original_width
+        self.height = original_height
+
+        self.to_jpeg(filepath)
+
 
 
     def remove_seam_vert2 (self, alg, return_pixels = False):
@@ -359,7 +386,7 @@ class sc_Image:
 
             print "Got %d seams" % (i+1)
 
-        print "Enlarging image..."
+        
         return seams
 
     #calculate the lowest energy seams then add duplicates of them to the picture
@@ -376,6 +403,7 @@ class sc_Image:
 
         seams = self.get_n_seams(new_pixels, energy, alg)
 
+        print "Enlarging image..."
 
         self.width = original_width
         self.height = original_height

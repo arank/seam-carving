@@ -20,11 +20,11 @@ import image
 #Creating several energy maps of castle image
 
 # im = image.sc_Image.from_filepath2("images/castle.jpg")
-# im.to_energy_pic('castle_sobel.jpg', 'sobel')
-# im.to_energy_pic('castle_scharr.jpg', 'scharr')
-# im.to_energy_pic('castle_kroon.jpg', 'kroon')
-# im.to_energy_pic('castle_sobel5.jpg', 'sobel5')
-# im.to_energy_pic('castle_scharr5.jpg', 'scharr5')
+# im.to_energy_pic('images/castle_sobel.jpg', 'sobel')
+# im.to_energy_pic('images/castle_scharr.jpg', 'scharr')
+# im.to_energy_pic('images/castle_kroon.jpg', 'kroon')
+# im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
+# im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
 
 #enlarging landscape.jpg by 50 seams
