@@ -56,8 +56,11 @@ class sc_Image:
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
 
+        print 'converting to object'
         im = Image.open (filepath)
         pixels, width, height = from_pil(im)
+
+        print 'calculating energies'
         return cls ((width, height), pixels, im)
 
     def get_neighbors_simple (self, pos, pixels, dim):
@@ -291,6 +294,9 @@ class sc_Image:
         to_remove = seam
 
         # copy all pixels to return later if needed
+
+
+        #try making new ones instead of deep copy
         if return_pixels:
             pixels = map( lambda p : copy.deepcopy (self.get_pixel(p)), seam)
         else:

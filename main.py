@@ -26,6 +26,16 @@ import image
 # im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
 
+im = image.sc_Image.from_filepath2("images/skateboarder.jpg")
+im.to_seam_pic("images/skateboarder_entropy_seams.jpg",50, energy = 'entropy')
+
+
+#im.shrink(30,energy = 'sobel', alg = 'dyn')
+
+#im.to_jpeg("images/castle_small.jpg")
+
+
+
 #enlarging landscape.jpg by 50 seams
 
 # im = image.sc_Image.from_filepath2("images/landscape.jpg")
