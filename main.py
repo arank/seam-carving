@@ -1,5 +1,4 @@
 import image
-
 #The following strings may be used for the energy argument:
 #'sobel', 'scharr', 'kroon', 'sobel5', 'scharr5'
 

@@ -36,7 +36,6 @@ class sc_Image:
         self.dim = 3
         self.PIL = PIL
     
-
     @classmethod
     def from_filepath(cls, filepath):
         """ Given an image file turns into an sc_Image class.
