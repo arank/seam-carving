@@ -38,7 +38,6 @@ class sc_Image:
         self.dim = 3
         self.PIL = PIL
     
-
     @classmethod
     def from_filepath(cls, filepath):
         """ Given an image file turns into an sc_Image class.
@@ -171,13 +170,13 @@ class sc_Image:
 
         #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
         if algorithm == 'sobel':
-            map (set_energy_e1 ,self.pixels.values() )
+            map (set_energy_e1_Sobel ,self.pixels.values() )
 
-        if algorithm == 'scharr':
-            map (set_energy_e1 ,self.pixels.values() )
+        elif algorithm == 'scharr':
+            map (set_energy_e1_Scharr ,self.pixels.values() )
 
-        if algorithm == 'kroon':
-            map (set_energy_e1 ,self.pixels.values() ) 
+        elif algorithm == 'kroon':
+            map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
             temp_pix = self.pixels
@@ -254,7 +253,7 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
     #Uses the grayscale of the image to get an energy map
-    def to_energy_pic (self, filepath, energy = 'e1'):
+    def to_energy_pic (self, filepath, energy = 'sobel'):
         original_pixels = self.pixels
         gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
         self.pixels = gray_pixels
@@ -270,7 +269,32 @@ class sc_Image:
 
         self.pixels = original_pixels
 
-    # removes a vertical seam
+    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn'):
+
+
+        original_pixels = copy.deepcopy(self.pixels)
+        original_width = self.width
+        original_height = self.height
+
+
+        seams = self.get_n_seams(n, energy, alg)
+
+        to_color = []
+        for seam in seams:
+            to_color.append(map (lambda p : p.original_pos , seam))
+        
+
+        for seam in to_color:
+            for pos in seam:
+                original_pixels[pos].rgb = (300,0,0)
+
+        self.pixels = original_pixels
+        self.width = original_width
+        self.height = original_height
+
+        self.to_jpeg(filepath)
+
+
     def remove_seam_vert2 (self, alg, return_pixels = False):
 
         seam = self.get_next_seam(alg)
@@ -376,6 +400,7 @@ class sc_Image:
 
             print "Got %d seams" % (i+1)
 
+        
         return seams
 
     #calculate the lowest energy seams then add duplicates of them to the picture
@@ -392,6 +417,7 @@ class sc_Image:
 
         seams = self.get_n_seams(new_pixels, energy, alg)
 
+        print "Enlarging image..."
 
         self.width = original_width
         self.height = original_height
@@ -454,8 +480,6 @@ class Pixel:
             self.gray =  r + 256 * g + (256^2) * b
         else:
             self.gray = gray
-
-
 
         self.energy = 0
 
