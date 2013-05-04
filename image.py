@@ -276,15 +276,15 @@ class sc_Image:
 
     def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
 
+        if orientation == 'horizontal' :
+            self.transpose()
+
 
         original_pixels = copy.deepcopy(self.pixels)
         original_width = self.width
         original_height = self.height
 
-        if orientation == 'horizontal':
-            seams = self.get_n_seams(n, energy, alg, 'horizontal')
-        else:
-            seams = self.get_n_seams(n, energy, alg)
+
 
         to_color = []
         for seam in seams:
@@ -298,6 +298,9 @@ class sc_Image:
         self.pixels = original_pixels
         self.width = original_width
         self.height = original_height
+
+        if orientation == 'horizontal' :
+            self.transpose()
 
         self.to_jpeg(filepath)
 
@@ -399,7 +402,7 @@ class sc_Image:
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
 
 
-    def get_n_seams(self,n, energy, alg, orientation='vertical', inverse=False) :
+    def get_n_seams(self,n, energy, alg,  inverse=False) :
 
 
         seams = []
@@ -407,8 +410,6 @@ class sc_Image:
             self.set_energies(energy)
             if inverse:
                 self.invert_energies()
-            if (orientation == 'horizontal'):
-                self.transpose()
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
 
@@ -473,7 +474,7 @@ class sc_Image:
         if orientation == 'horizontal' :
             self.transpose()    
 
-    def enlarge_objects (self, new_pixels, orientation="vertical", energy='e1', alg='dyn'):
+    def enlarge_objects (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
          self.shrink(new_pixels,orientation,energy,alg)
          self.enlarge(new_pixels,orientation,energy,alg,True)
 

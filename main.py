@@ -26,9 +26,11 @@ import image
 # im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
 
-im = image.sc_Image.from_filepath2("images/skateboarder.jpg")
-im.enlarge_objects(50)
-im.to_jpeg("images/big_skateboarder.jpg")
+im = image.sc_Image.from_filepath2("images/sunset.jpeg")
+im.enlarge_objects(40, orientation = 'horizontal')
+im.enlarge_objects(40, orientation = 'vertical')
+
+im.to_jpeg("images/big_sunset.jpg")
 
 
 # im = image.sc_Image.from_filepath2("images/dolphin.jpg")
