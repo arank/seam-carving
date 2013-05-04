@@ -58,8 +58,11 @@ class sc_Image:
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
 
+        print 'converting to object'
         im = Image.open (filepath)
         pixels, width, height = from_pil(im)
+
+        print 'calculating energies'
         return cls ((width, height), pixels, im)
 
     # gets neigbors to pixel at given position in image in form of pixle list
@@ -269,15 +272,19 @@ class sc_Image:
 
         self.pixels = original_pixels
 
-    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn'):
+
+
+    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
 
 
         original_pixels = copy.deepcopy(self.pixels)
         original_width = self.width
         original_height = self.height
 
-
-        seams = self.get_n_seams(n, energy, alg)
+        if orientation == 'horizontal':
+            seams = self.get_n_seams(n, energy, alg, 'horizontal')
+        else:
+            seams = self.get_n_seams(n, energy, alg)
 
         to_color = []
         for seam in seams:
@@ -304,6 +311,9 @@ class sc_Image:
         to_remove = seam
 
         # copy all pixels to return later if needed
+
+
+        #try making new ones instead of deep copy
         if return_pixels:
             pixels = map( lambda p : copy.deepcopy (self.get_pixel(p)), seam)
         else:
@@ -387,9 +397,9 @@ class sc_Image:
         r2, g2, b2 = rgb2
 
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
-    
-    # grabs first n seams found in image
-    def get_n_seams(self,n, energy, alg, inverse=False) :
+
+
+    def get_n_seams(self,n, energy, alg, orientation='vertical') :
 
 
         seams = []
@@ -397,6 +407,8 @@ class sc_Image:
             self.set_energies(energy)
             if inverse:
                 self.invert_energies()
+            if (orientation == 'horizontal'):
+                self.transpose()
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
 
@@ -442,7 +454,7 @@ class sc_Image:
 
 
     # shrinks a picture by continouslly removing the lowest energy seem
-    def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dyn'):
+    def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
 
         counter = 0
 
@@ -465,7 +477,17 @@ class sc_Image:
          shrink(new_pixels,orientation,energy,alg)
          enlarge(new_pixels,orientation,energy,alg,True)
 
-    # transposes the image so we can operate on it vertically and horizonatally. It re instatiates object ivars
+
+##    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
+##        to_remove = 0
+##        if (orientation == "vertical"):
+##            to_remove = y2 - y1
+##            for i in range(y1, to_remove):
+##        else:
+##            ro_revome = x2 - x1
+##            for i in range(x1, to_remove):
+
+ 
     def transpose (self) :
         new_pix = {}
         for i in range(self.width):

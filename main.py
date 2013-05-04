@@ -26,6 +26,18 @@ import image
 # im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
 
+im = image.sc_Image.from_filepath2("images/dolphin.jpg")
+im.to_seam_pic("images/dolphin_entropy_hseams_10bins.jpg",50, energy = 'entropy', orientation='horizontal')
+im.shrink(50,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
+im.to_jpeg("images/dolphin_hshrank_entropy_10bins.jpg")
+
+
+#im.shrink(30,energy = 'sobel', alg = 'dyn')
+
+#im.to_jpeg("images/castle_small.jpg")
+
+
+
 #enlarging landscape.jpg by 50 seams
 
 # im = image.sc_Image.from_filepath2("images/landscape.jpg")
