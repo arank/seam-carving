@@ -1,5 +1,5 @@
 import energy
-from seams import Seam, seam_dijk, seam_dyn
+from seams import seam_dijk, seam_dyn
 from random import randrange
 
 import copy
