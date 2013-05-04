@@ -446,14 +446,14 @@ class sc_Image:
             self.transpose()    
 
 
-    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
-        to_remove = 0
-        if (orientation == "vertical"):
-            to_remove = y2 - y1
-            for i in range(y1, to_remove):
-        else:
-            ro_revome = x2 - x1
-            for i in range(x1, to_remove):
+##    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
+##        to_remove = 0
+##        if (orientation == "vertical"):
+##            to_remove = y2 - y1
+##            for i in range(y1, to_remove):
+##        else:
+##            ro_revome = x2 - x1
+##            for i in range(x1, to_remove):
 
         
     def transpose (self) :

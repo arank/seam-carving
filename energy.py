@@ -88,7 +88,7 @@ def entropy(pixel, square):
    #Shannon entropy formula with a base 2 log. Source:
    #http://upload.wikimedia.org/math/8/7/e/87efdf0d38947240683250d3a24466e0.png
    pixel.energy = -sum([p*(log(p, 2)) for p in square_prob])
-   print pixel.energy
+   #print pixel.energy
    pixel.energy = pixel.energy * 500
    #print pixel.energy
    pixel.recalculate = False
