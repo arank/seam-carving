@@ -399,7 +399,7 @@ class sc_Image:
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
 
 
-    def get_n_seams(self,n, energy, alg, orientation='vertical') :
+    def get_n_seams(self,n, energy, alg, orientation='vertical', inverse=False) :
 
 
         seams = []
@@ -474,8 +474,8 @@ class sc_Image:
             self.transpose()    
 
     def enlarge_objects (self, new_pixels, orientation="vertical", energy='e1', alg='dyn'):
-         shrink(new_pixels,orientation,energy,alg)
-         enlarge(new_pixels,orientation,energy,alg,True)
+         self.shrink(new_pixels,orientation,energy,alg)
+         self.enlarge(new_pixels,orientation,energy,alg,True)
 
 
 ##    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
