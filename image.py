@@ -289,7 +289,7 @@ class sc_Image:
         original_width = self.width
         original_height = self.height
 
-
+        seams = self.get_n_seams(n, energy, alg)
 
         to_color = []
         for seam in seams:
