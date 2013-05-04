@@ -75,9 +75,10 @@ def entropy(pixel, square):
       histogram[b + (b/4)*i] = 1
    #histogram = {b:1, 2*b:1, 3*b:1, 4*b:1, 5*b:1, 6*b:1, 7*b:1, 8*b:1, 9*b:1, 10*b:1}
    for x in range (hist_len):
+       if square[x] == None:
+             square[x] = pixel
        for k, v in histogram.iteritems():
-          #print square[x].gray
-          if (square[x] != None and square[x].gray < k):                
+          if (square[x].gray < k):                
              histogram[k] += 1
              break
 

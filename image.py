@@ -426,7 +426,7 @@ class sc_Image:
 
 
     # shrinks a picture by continouslly removing the lowest energy seem
-    def shrink (self, to_remove, orientation = "vertical", energy = 'e1', alg = 'dyn'):
+    def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
 
         counter = 0
 
@@ -446,7 +446,16 @@ class sc_Image:
             self.transpose()    
 
 
+    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
+        to_remove = 0
+        if (orientation == "vertical"):
+            to_remove = y2 - y1
+            for i in range(y1, to_remove):
+        else:
+            ro_revome = x2 - x1
+            for i in range(x1, to_remove):
 
+        
     def transpose (self) :
         new_pix = {}
         for i in range(self.width):
