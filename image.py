@@ -497,18 +497,21 @@ class sc_Image:
 
 
 
-    def remove_object(self, energy = 'sobel', alg = 'dyn'):
+    def remove_object(self,rgb, energy = 'sobel', alg = 'dyn'):
 
         max_width = 0
         for h in range(self.height): 
             width = 0
             for w in range(self.width):
-                if self.pixels[(w,h)].rgb == (35, 255, 9):
+                if self.pixels[(w,h)].rgb == rgb:
+                    self.pixels[(w,h)].energy = -99999
                     self.pixels[(w,h)].to_remove = True
                     width += 1
 
             if width > max_width:
                 max_width = width
+
+        
 
 
 
@@ -548,9 +551,11 @@ class Pixel:
     def shift_pos(self, dx, dy):
         self.pos = (self.pos[0]+dx, self.pos[1]+dy)
 
-    # mark to see if it needs to be re energized
+
+    #flag to recalculate energy unless this pixel is part of an object getting removed
     def to_recalculate(self):
-        self.recalculate = True
+        if not self.to_remove:
+            self.recalculate = True
 
     # to string function
     def __str__(self):
