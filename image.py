@@ -122,6 +122,35 @@ class sc_Image:
         else:
             return None
 
+    def make_mirror_lib (self, marg) :
+
+        temp_pix = self.pixels
+
+        for h in range(-marg, 0) + range(self.height, self.height + marg): 
+            for w in range(self.width):
+                if h < 0 :
+                    temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, 0)].rgb )
+                else :
+                    temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height -1)].rgb )
+
+        for w in range(-marg, 0) + range(self.width, self.width + marg): 
+            for h in range(- marg, self.height + marg):
+                if w < 0:
+                    if h < 0:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,0)].rgb )
+                    elif h >= self.height:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height-1)].rgb )
+                    else:
+                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(0, h)].rgb )
+                else:
+                    if h < 0:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,0)].rgb )
+                    elif h >= self.height:
+                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
+                    else:
+                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb
+
+        return temp_pix
 
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm = 'sobel') :
@@ -182,31 +211,7 @@ class sc_Image:
             map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
-            temp_pix = self.pixels
-
-            for h in [-2, -1, self.height, self.height +1] : 
-                for w in range(self.width):
-                    if h == -1 or h == -2:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, 0)].rgb )
-                    else:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height -1)].rgb )
-
-            for w in [-2, -1, self.width, self.width +1]:
-                for h in range(-2, self.height + 2):
-                    if w == -1 or w == -2:
-                        if h == -1 or -2:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,0)].rgb )
-                        elif h == self.height or h == self.height + 1:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height-1)].rgb )
-                        else:
-                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(0, h)].rgb )
-                    else:
-                        if h == -1 or -2:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,0)].rgb )
-                        elif h == self.height or h == self.height + 1:
-                            temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
-                        else:
-                            temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb )
+            temp_pix = make_mirror_lib (2)
 
             for h in range(self.height):
                 for w in range(self.width):
@@ -276,15 +281,15 @@ class sc_Image:
 
     def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
 
+        if orientation == 'horizontal' :
+            self.transpose()
+
 
         original_pixels = copy.deepcopy(self.pixels)
         original_width = self.width
         original_height = self.height
 
-        if orientation == 'horizontal':
-            seams = self.get_n_seams(n, energy, alg, 'horizontal')
-        else:
-            seams = self.get_n_seams(n, energy, alg)
+        seams = self.get_n_seams(n, energy, alg)
 
         to_color = []
         for seam in seams:
@@ -298,6 +303,9 @@ class sc_Image:
         self.pixels = original_pixels
         self.width = original_width
         self.height = original_height
+
+        if orientation == 'horizontal' :
+            self.transpose()
 
         self.to_jpeg(filepath)
 
@@ -399,7 +407,7 @@ class sc_Image:
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
 
 
-    def get_n_seams(self,n, energy, alg, orientation='vertical', inverse=False) :
+    def get_n_seams(self,n, energy, alg,  inverse=False) :
 
 
         seams = []
@@ -407,8 +415,6 @@ class sc_Image:
             self.set_energies(energy)
             if inverse:
                 self.invert_energies()
-            if (orientation == 'horizontal'):
-                self.transpose()
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
 
@@ -473,7 +479,7 @@ class sc_Image:
         if orientation == 'horizontal' :
             self.transpose()    
 
-    def enlarge_objects (self, new_pixels, orientation="vertical", energy='e1', alg='dyn'):
+    def enlarge_objects (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
          self.shrink(new_pixels,orientation,energy,alg)
          self.enlarge(new_pixels,orientation,energy,alg,True)
 
