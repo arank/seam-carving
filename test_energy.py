@@ -1,7 +1,7 @@
 import image
 
-im = image.sc_Image.from_filepath2("images/landscape.jpg")
+im = image.sc_Image.from_filepath2("images/skateboarder.jpg")
 
 
-im.to_energy_pic("images/entropy_landscape.jpg", 'entropy')
+im.to_energy_pic("images/entropy_skateboarder.jpg", 'entropy')
 

@@ -487,14 +487,30 @@ class sc_Image:
          self.enlarge(new_pixels,orientation,energy,alg,True)
 
 
-##    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
-##        to_remove = 0
-##        if (orientation == "vertical"):
-##            to_remove = y2 - y1
-##            for i in range(y1, to_remove):
-##        else:
-##            ro_remove = x2 - x1
-##            for i in range(x1, to_remove):
+
+    def enlarge_object(self, seams, energy = 'sobel', alg = 'dyn'):
+        self.shrink(seams/2, 'vertical', energy, alg)
+        self.shrink(seams/2, 'horizontal', energy, alg)
+
+        self.enlarge(seams/2, 'vertical', energy, alg)
+        self.enlarge(seams/2, 'horizontal', energy, alg)
+
+
+
+    def remove_object(self, energy = 'sobel', alg = 'dyn'):
+
+        max_width = 0
+        for h in range(self.height): 
+            width = 0
+            for w in range(self.width):
+                if self.pixels[(w,h)].rgb == (35, 255, 9):
+                    self.pixels[(w,h)].to_remove = True
+                    width += 1
+
+            if width > max_width:
+                max_width = width
+
+
 
  
     def transpose (self) :
@@ -523,6 +539,8 @@ class Pixel:
             self.gray = gray
 
         self.energy = 0
+
+        self.to_remove = False
 
         self.recalculate = True
 

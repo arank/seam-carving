@@ -32,15 +32,13 @@ import image
 # im.to_jpeg("images/big_sunset.jpg")
 
 
-im = image.sc_Image.from_filepath2("images/landscape.jpg")
-im.shrink(50, orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
-im.to_jpeg("images/landscape_hshrank_entropy_10bins.jpg")
 
+im = image.sc_Image.from_filepath2("images/sunset_to_remove.jpg")
 
-# im = image.sc_Image.from_filepath2("images/dolphin.jpg")
-# im.to_seam_pic("images/dolphin_entropy_hseams_10bins.jpg",50, energy = 'entropy', orientation='horizontal')
-# im.shrink(50,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
-# im.to_jpeg("images/dolphin_hshrank_entropy_10bins.jpg")
+im.remove_object()
+im.to_jpeg("images/sunset_object_removed.jpg")
+
+# im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
 
 
 #im.shrink(30,energy = 'sobel', alg = 'dyn')

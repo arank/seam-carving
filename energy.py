@@ -65,9 +65,9 @@ def Scharr_five_op(pixel, neighbors):
 #image expansion for the final submission
 def entropy(pixel, square):
    num_bins = 10
-   pix_range = 16844000/500
+   pix_range = 16844000/1000
    #b = pix_range/num_bins
-   b = 20000
+   b = 50
    hist_len = len(square)
    dim = hist_len**(.5)
    histogram = {}
@@ -94,6 +94,7 @@ def entropy(pixel, square):
    pixel.energy = -sum([p*(log(p, 2)) for p in square_prob])
    #print pixel.energy
    pixel.energy = pixel.energy ** 5
+
    #print pixel.energy
    pixel.recalculate = False
    return pixel
