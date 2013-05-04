@@ -122,8 +122,8 @@ class sc_Image:
         else:
             return None
 
-    def make_mirror_lib (self, marg) :
-
+    def make_mirror_dic (self) :
+        marg = self.dim/2
         temp_pix = self.pixels
 
         for h in range(-marg, 0) + range(self.height, self.height + marg): 
@@ -148,7 +148,7 @@ class sc_Image:
                     elif h >= self.height:
                         temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
                     else:
-                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb
+                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb)
 
         return temp_pix
 
@@ -211,7 +211,7 @@ class sc_Image:
             map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
-            temp_pix = make_mirror_lib (2)
+            temp_pix = make_mirror_dic ()
 
             for h in range(self.height):
                 for w in range(self.width):
@@ -221,6 +221,7 @@ class sc_Image:
                         set_energy_e1_Scharr_5( temp_pix[(w,h)] )
 
         elif algorithm == 'entropy':
+            temp_pix = make_mirror_dic(self)
             map (set_energy_entropy ,self.pixels.values() ) 
 
         else:

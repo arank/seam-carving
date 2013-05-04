@@ -25,7 +25,6 @@ import image
 # im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
 # im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
-
 # im = image.sc_Image.from_filepath2("images/sunset.jpeg")
 # im.enlarge_objects(40, orientation = 'horizontal')
 # im.enlarge_objects(40, orientation = 'vertical')
