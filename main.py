@@ -27,9 +27,9 @@ import image
 
 
 im = image.sc_Image.from_filepath2("images/dolphin.jpg")
-im.to_seam_pic("images/dolphin_entropy_seams_10bins.jpg",50, energy = 'entropy')
-im.shrink(50,orientation = 'vertical', energy = 'entropy', alg = 'dyn')
-im.to_jpeg("images/dolphin_shrank_entropy_10bins.jpg")
+im.to_seam_pic("images/dolphin_entropy_hseams_10bins.jpg",50, energy = 'entropy', orientation='horizontal')
+im.shrink(50,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
+im.to_jpeg("images/dolphin_hshrank_entropy_10bins.jpg")
 
 
 #im.shrink(30,energy = 'sobel', alg = 'dyn')
