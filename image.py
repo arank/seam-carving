@@ -211,7 +211,7 @@ class sc_Image:
             map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
-            temp_pix = make_mirror_dic ()
+            temp_pix = self.make_mirror_dic()
 
             for h in range(self.height):
                 for w in range(self.width):
@@ -221,7 +221,7 @@ class sc_Image:
                         set_energy_e1_Scharr_5( temp_pix[(w,h)] )
 
         elif algorithm == 'entropy':
-            temp_pix = make_mirror_dic(self)
+            temp_pix = self.make_mirror_dic()
             map (set_energy_entropy ,self.pixels.values() ) 
 
         else:
