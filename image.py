@@ -389,12 +389,14 @@ class sc_Image:
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
     
     # grabs first n seams found in image
-    def get_n_seams(self,n, energy, alg) :
+    def get_n_seams(self,n, energy, alg, inverse=False) :
 
 
         seams = []
         for i in range(n):
             self.set_energies(energy)
+            if inverse:
+                self.invert_energies()
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
 
@@ -403,8 +405,13 @@ class sc_Image:
         
         return seams
 
+    def invert_energies(self):
+        for w in range (self.width):
+            for h in range(self.height):
+                self.pixels[(w,h)].energy*=-1
+
     #calculate the lowest energy seams then add duplicates of them to the picture
-    def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn'):
+    def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn', inverse=False):
 
         if orientation == 'horizontal' :
             self.transpose()
@@ -415,7 +422,7 @@ class sc_Image:
         original_width =self.width
         original_height = self.height
 
-        seams = self.get_n_seams(new_pixels, energy, alg)
+        seams = self.get_n_seams(new_pixels, energy, alg, inverse)
 
         print "Enlarging image..."
 
@@ -454,6 +461,9 @@ class sc_Image:
         if orientation == 'horizontal' :
             self.transpose()    
 
+    def enlarge_objects (self, new_pixels, orientation="vertical", energy='e1', alg='dyn'):
+         shrink(new_pixels,orientation,energy,alg)
+         enlarge(new_pixels,orientation,energy,alg,True)
 
     # transposes the image so we can operate on it vertically and horizonatally. It re instatiates object ivars
     def transpose (self) :
@@ -465,7 +475,7 @@ class sc_Image:
         tmp = self.height
         self.height = self.width
         self.width = tmp
-
+        
 # Class that encapsulates pixle data in image sc object including the energy, the unique identifier, the color the postion
 # and a suite of methods to interact with it in the context of the image object
 class Pixel:
