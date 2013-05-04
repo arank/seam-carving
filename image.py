@@ -258,15 +258,17 @@ class sc_Image:
         self.pixels = original_pixels
 
 
-    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn'):
+    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
 
 
         original_pixels = copy.deepcopy(self.pixels)
         original_width = self.width
         original_height = self.height
 
-
-        seams = self.get_n_seams(n, energy, alg)
+        if orientation == 'horizontal':
+            seams = self.get_n_seams(n, energy, alg, 'horizontal')
+        else:
+            seams = self.get_n_seams(n, energy, alg)
 
         to_color = []
         for seam in seams:
@@ -380,12 +382,14 @@ class sc_Image:
 
         return ((r1+r2)/2, (g1+g2)/2, (b1+b2)/2)
 
-    def get_n_seams(self,n, energy, alg) :
+    def get_n_seams(self,n, energy, alg, orientation='vertical') :
 
 
         seams = []
         for i in range(n):
             self.set_energies(energy)
+            if (orientation == 'horizontal'):
+                self.transpose()
             seam = self.remove_seam_vert2(alg, return_pixels = True)
             seams.append( seam )
 
