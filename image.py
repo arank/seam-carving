@@ -104,17 +104,6 @@ class sc_Image:
         return data
 
 
-    # get neighbors within a 5X5 square of the target pixel retrurning a list of pixles
-    def get_five_neighbors (self, pos, pixels) :
-
-        x, y = pos
-        data = []
-        for j in range(y+2, y-3, -1):
-            for i in range(x-2,x+3):
-                data.append(pixels[(i,j)])
-        return data
-
-
     # gets pixel object at given postion
     def get_pixel(self, pos):
         if pos in self.pixels:
