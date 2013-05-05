@@ -1,4 +1,6 @@
 import image
+
+
 #The following strings may be used for the energy argument:
 #'sobel', 'scharr', 'kroon', 'sobel5', 'scharr5'
 
@@ -33,10 +35,18 @@ import image
 
 
 
-im = image.sc_Image.from_filepath2("images/sunset_to_remove.jpg")
+im = image.sc_Image.from_filepath2("images/skateboarder_to_remove.jpg")
+im.remove_object((35, 255, 9))
+im.to_jpeg("images/skateboarder_object_removed.jpg")
 
-im.remove_object()
-im.to_jpeg("images/sunset_object_removed.jpg")
+
+# im = image.sc_Image.from_filepath2("images/dolphin_to_remove.jpg")
+# im.remove_object((35, 255, 9))
+# im.to_jpeg("images/dolphin_object_removed.jpg")
+
+# im = image.sc_Image.from_filepath2("images/intermediate.jpg")
+# im.enlarge(54)
+# im.to_jpeg("images/sunset_removed.jpg")
 
 # im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
 
