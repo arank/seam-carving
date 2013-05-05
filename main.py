@@ -66,9 +66,10 @@ import image
 
 #enlarging landscape.jpg by 50 seams
 
-im = image.sc_Image.from_filepath("images/landscape.jpg")
-im.enlarge(1 ,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
-im.to_jpeg("images/landscape_enlarged.jpg")
+im = image.sc_Image.from_filepath("images/giza.jpg")
+im.to_energy_pic('images/pyramid_entropy.jpg', 'entropy')
+##im.enlarge(1 ,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
+##im.to_jpeg("images/landscape_enlarged.jpg")
 
 #enlarging skateboarder by 80 pixels
 
