@@ -2,6 +2,8 @@ import heapq
 
 
 # test heap from standard pyhton lib for comaprison tests
+# also for use in unit testing Djikras algorithm implementation with
+# a known quantity storage solution
 class TestHeap :
     def __init__(self):
         self.h = []
@@ -15,8 +17,10 @@ class TestHeap :
 # calculates the lowest seam starting at a given pixel with Dijkstra's
 #helper methods may be added later
 
-# min heap that stores edges for djikstras algorithm, given constant time
-# lookup and log insert
+# min binary heap that stores edges for djikstras algorithm, given logartithmic time
+# deletion and fixing of th tree and log time insertion into the tree
+# we realize this could be faster with a d-nary heap or fibbonacci heap (ammortized time is fatser)
+# but this really is not the focus of our project
 class Heap :
 
     def __init__(self):
@@ -89,7 +93,8 @@ class Edge :
 
         return "[%s]" % str(self.weight)
 
-# djikstras algorithm
+# djikstras algorithm, takes in an image and retuns a list of pixles representing
+# the shortest path from top to bottom
 def seam_dijk (image) :
     heap = TestHeap ()
     path =[]
@@ -114,7 +119,8 @@ def seam_dijk (image) :
     while True : 
         edge = heap.get_top()
 
-        #nighbors
+        # nighbors of the minimum spanning tree that represents our iteration
+        # of the algorithm
         neighbors = []
             
         if (edge.sink.pos[1] == (image.height-1)) :

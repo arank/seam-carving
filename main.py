@@ -27,15 +27,16 @@ import image
 # im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
 # im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
+# Object enlarement on the sun
 
 # im = image.sc_Image.from_filepath("images/sunset.jpeg")
-# im.enlarge_objects(40, orientation = 'horizontal')
-# im.enlarge_objects(40, orientation = 'vertical')
+# im.enlarge_object_1d(40, orientation = 'horizontal')
+# im.enlarge_object_1d(40, orientation = 'vertical')
 
 
 # im.to_jpeg("images/big_sunset.jpg")
 
-
+# Removes the colored skateboarder and dolphin from the respecitve images
 
 # im = image.sc_Image.from_filepath("images/skateboarder_to_remove.jpg")
 # im.remove_object((35, 255, 9), 5)
@@ -46,13 +47,16 @@ import image
 # im.remove_object((35, 255, 9), 5)
 # im.to_jpeg("images/dolphin_object_removed.jpg")
 
+# Content aware resizes intermediate image
 
 # im = image.sc_Image.from_filepath("images/intermediate.jpg")
 # im.enlarge(54)
 # im.to_jpeg("images/sunset_removed.jpg")
 
-# im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
+# Gives the highligheted seams picure when 80 seams are removed with entropy energy finding
+# as well as shrinks the image.
 
+# im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
 
 #im.shrink(30,energy = 'sobel', alg = 'dyn')
 
