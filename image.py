@@ -222,7 +222,9 @@ class sc_Image:
 
         elif algorithm == 'entropy':
             temp_pix = self.make_mirror_dic()
-            map (set_energy_entropy ,self.pixels.values() ) 
+            for h in range(self.height):
+                for w in range(self.width):
+                    set_energy_entropy( temp_pix[(w,h)] ) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
@@ -491,7 +493,7 @@ class sc_Image:
 ##            to_remove = y2 - y1
 ##            for i in range(y1, to_remove):
 ##        else:
-##            ro_revome = x2 - x1
+##            ro_remove = x2 - x1
 ##            for i in range(x1, to_remove):
 
  
