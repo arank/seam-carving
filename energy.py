@@ -39,7 +39,7 @@ def Sobel_op(pixel, neighbors):
 #similar to above, the abstraction for all 5x5 filters
 def five_five_filter(pixel, n, a, b, c, d, e, f):
     pos_dx = a*n[11].gray + b*n[10].gray + c*(n[6].gray + n[16].gray) + d*(n[5].gray + n[15].gray) + e*(n[1].gray + n[21].gray) + f*(n[0].gray+n[20].gray)
-    neg_dx = a*n[13].gray + b*n[14].gray + c*(n[8].gray + n[18].gray) + d*(n[9].gray + n[8].gray) + e*(n[3].gray + n[23].gray) + f*(n[4].gray + n[24].gray)
+    neg_dx = a*n[13].gray + b*n[14].gray + c*(n[8].gray + n[18].gray) + d*(n[9].gray + n[19].gray) + e*(n[3].gray + n[23].gray) + f*(n[4].gray + n[24].gray)
     dx = pos_dx - neg_dx
     pos_dy = a*n[17].gray + b*n[22].gray + c*(n[16].gray + n[18].gray) + d*(n[21].gray + n[23].gray) + e*(n[15].gray + n[19].gray) + f*(n[20].gray+n[24].gray)
     neg_dy = a*n[7].gray + b*n[2].gray + c*(n[6].gray + n[8].gray) + d*(n[1].gray + n[3].gray) + e*(n[5].gray + n[9].gray) + f*(n[0].gray + n[4].gray)

@@ -122,7 +122,7 @@ class sc_Image:
         else:
             return None
 
-    # makes a pixle dictionary of the mirror reflection of the image and retunrs it
+    # makes a pixel dictionary of the mirror reflection of the image and retunrs it
     def make_mirror_dic (self) :
         marg = self.dim/2
         temp_pix = self.pixels
