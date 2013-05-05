@@ -66,9 +66,9 @@ import image
 
 #enlarging landscape.jpg by 50 seams
 
-# im = image.sc_Image.from_filepath("images/landscape.jpg")
-# im.enlarge(1 ,orientation = 'horizontal', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("images/landscape_enlarged.jpg")
+im = image.sc_Image.from_filepath("images/landscape.jpg")
+im.enlarge(1 ,orientation = 'horizontal', energy = 'sobel', alg = 'dyn')
+im.to_jpeg("images/landscape_enlarged.jpg")
 
 #enlarging skateboarder by 80 pixels
 
