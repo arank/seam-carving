@@ -67,11 +67,11 @@ class sc_Image:
         return cls ((width, height), pixels, im)
 
     # gets neigbors to pixel at given position in image in form of pixle list
-    def get_neighbors_simple (self, pos, pixels, dim):
+    def get_neighbors_simple (self, pos, pixels):
         x, y = pos
         data = []
-        for j in range(y+(dim/2), y-(dim/2+1), -1):
-            for i in range(x-(dim/2),x+(dim/2+1)):
+        for j in range(y+(self.dim/2), y-(self.dim/2+1), -1):
+            for i in range(x-(self.dim/2),x+(self.dim/2+1)):
                 try:
                     data.append(pixels[(i,j)])
                 except KeyError:
@@ -79,18 +79,18 @@ class sc_Image:
         return data
 
     # flags neigboring pixles to pixle being removed so they can be recalculated by energy algorithm 
-    def recalculate_neighbors(self, pos, dim):
-        for p in self.get_neighbors_simple (pos, self.pixels, self.dim):
+    def recalculate_neighbors(self, pos):
+        for p in self.get_neighbors_simple (pos, self.pixels):
             if p is not None:
                 p.to_recalculate()
 
 
     # gets the dim x dim square of pixels of the pixel at pos for energy functions
-    def get_neighbors (self, pos, pixels, dim):
+    def get_neighbors (self, pos, pixels):
 
-        data = self.get_neighbors_simple(pos, pixels, dim)
+        data = self.get_neighbors_simple(pos, pixels)
 
-        if (dim == 3):
+        if (self.dim == 3):
             edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
             3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]}
         
@@ -100,7 +100,6 @@ class sc_Image:
                         if data[replace_with] is not None:
                             data [i] = data [replace_with]
                             break
-
         return data
 
 
@@ -119,27 +118,26 @@ class sc_Image:
         for h in range(-marg, 0) + range(self.height, self.height + marg): 
             for w in range(self.width):
                 if h < 0 :
-                    temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, 0)].rgb )
+                    temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(w, 0)].gray )
                 else :
-                    temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(w, self.height -1)].rgb )
+                    temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(w, self.height -1)].gray )
 
         for w in range(-marg, 0) + range(self.width, self.width + marg): 
             for h in range(- marg, self.height + marg):
                 if w < 0:
                     if h < 0:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,0)].rgb )
+                        temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(0,0)].gray )
                     elif h >= self.height:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(0,self.height-1)].rgb )
+                        temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(0,self.height-1)].gray )
                     else:
-                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(0, h)].rgb )
+                        temp_pix[(w,h)] = Pixel((w,h), (w,h), self.pixels[(0, h)].gray )
                 else:
                     if h < 0:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,0)].rgb )
+                        temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(self.width-1,0)].gray )
                     elif h >= self.height:
-                        temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
+                        temp_pix[(w,h)] = Pixel( (w,h), (w,h), self.pixels[(self.width-1,self.height-1)].gray)
                     else:
-                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb)
-
+                        temp_pix[(w,h)] = Pixel((w,h), (w,h), self.pixels[(self.width-1, h)].gray)
         return temp_pix
 
     # sets the energies of each pixel using the specified algorithm
@@ -149,48 +147,43 @@ class sc_Image:
         #print self.pixels[(127,107)
 
         def set_energy_e1_Sobel (pixel):
-            self.dim = 3
             if pixel.recalculate :
-                return energy.Sobel_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.Sobel_op (pixel, self.get_neighbors (pixel.pos,self.pixels) )
             else :
                 return pixel
 
         def set_energy_e1_Scharr (pixel):
-            self.dim = 3
             if pixel.recalculate :
-                return energy.Scharr_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.Scharr_op (pixel, self.get_neighbors (pixel.pos,self.pixels) )
             else :
                 return pixel
             
         def set_energy_e1_Kroon (pixel):
-            self.dim = 3
             if pixel.recalculate :
-                return energy.Kroon_op (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.Kroon_op (pixel, self.get_neighbors (pixel.pos,self.pixels) )
             else :
                 return pixel
 
-        def set_energy_e1_Sobel_5 (pixel) :
-            self.dim = 5
+        def set_energy_e1_Sobel_5 (pixel, pixels) :
             if pixel.recalculate :
-                return energy.Sobel_five_op (pixel, self.get_neighbors (pixel.pos,temp_pix, self.dim) )
+                return energy.Sobel_five_op (pixel, self.get_neighbors (pixel.pos, pixels) )
             else :
                 return pixel
             
-        def set_energy_e1_Scharr_5 (pixel) :
-            self.dim = 5
+        def set_energy_e1_Scharr_5 (pixel, pixels) :
             if pixel.recalculate :
-                return energy.Scharr_five_op (pixel, self.get_neighbors (pixel.pos,temp_pix, self.dim) )
+                return energy.Scharr_five_op (pixel, self.get_neighbors (pixel.pos, pixels) )
             else :
                 return pixel
 
-        def set_energy_entropy(pixel):
-            self.dim = 9
+        def set_energy_entropy(pixel, pixels):
             if pixel.recalculate :
-                return energy.entropy (pixel, self.get_neighbors (pixel.pos,self.pixels,self.dim) )
+                return energy.entropy (pixel, self.get_neighbors (pixel.pos,self.pixels) )
             else :
                 return pixel
 
         #print 'p127-0 is None ', ( self.pixels[(127,0)] is None)
+        self.dim = 3
         if algorithm == 'sobel':
             map (set_energy_e1_Sobel ,self.pixels.values() )
 
@@ -201,20 +194,22 @@ class sc_Image:
             map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
+            self.dim = 5
             temp_pix = self.make_mirror_dic()
 
             for h in range(self.height):
                 for w in range(self.width):
                     if algorithm == 'sobel5':
-                        set_energy_e1_Sobel_5( temp_pix[(w,h)] )
+                        set_energy_e1_Sobel_5( self.pixels[(w,h)], temp_pix )
                     if algorithm == 'scharr5':
-                        set_energy_e1_Scharr_5( temp_pix[(w,h)] )
+                        set_energy_e1_Scharr_5( self.pixels[(w,h)], temp_pix )
 
         elif algorithm == 'entropy':
+            self.dim = 9
             temp_pix = self.make_mirror_dic()
             for h in range(self.height):
                 for w in range(self.width):
-                    set_energy_entropy( temp_pix[(w,h)] ) 
+                    set_energy_entropy( self.pixels[(w,h)], temp_pix) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
@@ -329,7 +324,7 @@ class sc_Image:
                 if not decrement:
                     if (w,h) in to_remove:
                         decrement = True
-                        self.recalculate_neighbors((w,h), self.dim)
+                        self.recalculate_neighbors((w,h))
 
                 else:
                     self.pixels[(w,h)].shift_pos(-1,0)
