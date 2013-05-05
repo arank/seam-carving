@@ -8,6 +8,7 @@ import Image
 # Grayscales the image so that we can run energy calculations on it
 def to_grayscale (img):
     return img.convert("L")
+
 # creates image sc object from python image library representation of a picture
 def from_pil (im):
     this_id = 0
@@ -38,22 +39,22 @@ class sc_Image:
         self.dim = 3
         self.PIL = PIL
     
-    @classmethod
-    def from_filepath(cls, filepath):
-        """ Given an image file turns into an sc_Image class.
-        eventually replace the im.getpixels calls with an im.getdata for performance reasons
-        """
+    # @classmethod
+    # def from_filepath(cls, filepath):
+    #     """ Given an image file turns into an sc_Image class.
+    #     eventually replace the im.getpixels calls with an im.getdata for performance reasons
+    #     """
 
-        pixels = {}
-        im = Image.open (filepath)
-        width, height = im.size
-        for h in range(height):
-            for w in range(width):
-                pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
-        return cls ((width, height), pixels, im)       
+    #     pixels = {}
+    #     im = Image.open (filepath)
+    #     width, height = im.size
+    #     for h in range(height):
+    #         for w in range(width):
+    #             pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
+    #     return cls ((width, height), pixels, im)       
     
     @classmethod
-    def from_filepath2 (cls, filepath):
+    def from_filepath (cls, filepath):
         """ Given an image file turns into an sc_Image class.
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
@@ -401,7 +402,7 @@ class sc_Image:
         self.width += 1
         return pixels
 
-    # averages the coler of two rgbs from pixles
+    # averages the coler of two rgbs from pixels
     def average_rbg(self, rgb1, rgb2):
         r1, g1, b1 = rgb1
         r2, g2, b2 = rgb2
@@ -430,8 +431,26 @@ class sc_Image:
             for h in range(self.height):
                 self.pixels[(w,h)].energy*=-1
 
+
+    def validate_number_of_seams(self, n, orientation):
+
+        if orientation == 'vertical':
+            if not (0 < n <= self.width):
+                raise Exception("Number of seams to remove must be greater than 0 and less than the image width %d" % (self.width))
+
+        
+        elif orientation == 'horizontal' :
+            if not (0 < n <= self.height):
+                raise Exception("Number of seams to remove must be greater than 0 and less than image height %d" % (self.height))           
+
+        else :
+            raise Exception("Orientation must be 'vertical' or 'horizontal' ")
+
+
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn', inverse=False):
+
+        self.validate_number_of_seams(new_pixels, orientation)
 
         if orientation == 'horizontal' :
             self.transpose()
@@ -464,11 +483,17 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
 
-        counter = 0
-
-        #if we are taking horizontal seams transpose the image first
+        self.validate_number_of_seams(to_remove, orientation)
+        
         if orientation == 'horizontal' :
             self.transpose()
+
+        else :
+            raise Exception("Orientation must be 'vertical' or 'horizontal' ")
+
+        counter = 0
+
+
 
         for i in range(to_remove) :
             counter += 1
@@ -499,17 +524,19 @@ class sc_Image:
         r1,g1,b1 = rgb1
         r2,g2,b2 = rgb2
 
-        return (r2-tolerance < r1 < r2+tolerance and  g2-tolerance < g1 < g2+tolerance and b2-tolerance < b1 < b2+tolerance )
+        return (r2-tolerance < r1 < r2+tolerance and  
+            g2-tolerance < g1 < g2+tolerance and b2-tolerance < b1 < b2+tolerance )
 
 
-    def remove_object(self,rgb, energy = 'sobel', alg = 'dyn'):
+    #remove an object that has been painted over with a color with rgb value "rgb".
+    #tolerance specifies how closely a pixel must match "rgb" to be removed
+    def remove_object(self,rgb, tolerance = 5, energy = 'sobel', alg = 'dyn'):
 
         max_width = 0
         for h in range(self.height): 
             width = 0
             for w in range(self.width):
-                if self.check_rgb(self.pixels[(w,h)].rgb, rgb, 6):
-                    #self.pixels[(w,h)].rgb = (0,0,0)
+                if self.check_rgb(self.pixels[(w,h)].rgb, rgb, tolerance):
                     self.pixels[(w,h)].energy = -99999999999
                     self.pixels[(w,h)].to_remove = True
                     self.pixels[(w,h)].recalculate = False
@@ -528,6 +555,10 @@ class sc_Image:
         
         self.enlarge(max_width, energy = energy, alg = alg)
 
+
+    def enlarge_objects (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
+         self.shrink(new_pixels,orientation,energy,alg)
+         self.enlarge(new_pixels,orientation,energy,alg,True)
  
     def transpose (self) :
         new_pix = {}
