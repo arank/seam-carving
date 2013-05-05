@@ -21,37 +21,33 @@ import image
 #Creating several energy maps of castle image
 
 # im = image.sc_Image.from_filepath("images/castle.jpg")
+# im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
+# im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 # im.to_energy_pic('images/castle_sobel.jpg', 'sobel')
 # im.to_energy_pic('images/castle_scharr.jpg', 'scharr')
 # im.to_energy_pic('images/castle_kroon.jpg', 'kroon')
-# im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
-# im.to_energy_pic('images/castle_scharr5.jpg', 'scharr5')
 
 # Object enlarement on the sun
 
 # im = image.sc_Image.from_filepath("images/sunset.jpeg")
 # im.enlarge_object_1d(40, orientation = 'horizontal')
 # im.enlarge_object_1d(40, orientation = 'vertical')
-
-
 # im.to_jpeg("images/big_sunset.jpg")
 
-# Removes the colored skateboarder and dolphin from the respecitve images
+# Removes the colored-in skateboarder from the skateboarder image
 
 # im = image.sc_Image.from_filepath("images/skateboarder_to_remove.jpg")
 # im.remove_object((35, 255, 9), 5)
 # im.to_jpeg("images/skateboarder_object_removed.jpg")
 
 
+# Removes the colored-in dolphin from the dolphin image
+
 # im = image.sc_Image.from_filepath("images/dolphin_to_remove.jpg")
 # im.remove_object((35, 255, 9), 5)
 # im.to_jpeg("images/dolphin_object_removed.jpg")
 
-# Content aware resizes intermediate image
 
-# im = image.sc_Image.from_filepath("images/intermediate.jpg")
-# im.enlarge(54)
-# im.to_jpeg("images/sunset_removed.jpg")
 
 # Gives the highligheted seams picure when 80 seams are removed with entropy energy finding
 # as well as shrinks the image.
@@ -66,10 +62,15 @@ import image
 
 #enlarging landscape.jpg by 50 seams
 
-im = image.sc_Image.from_filepath("images/giza.jpg")
-im.to_energy_pic('images/pyramid_entropy.jpg', 'entropy')
-##im.enlarge(1 ,orientation = 'horizontal', energy = 'entropy', alg = 'dyn')
-##im.to_jpeg("images/landscape_enlarged.jpg")
+
+
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.shrink(10 ,orientation = 'horizontal', energy = 'sobel', alg = 'dijk')
+# im.to_jpeg("images/landscape_dijk.jpg")
+
+#dijkstra seams
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dyn')
 
 #enlarging skateboarder by 80 pixels
 
@@ -96,3 +97,59 @@ im.to_energy_pic('images/pyramid_entropy.jpg', 'entropy')
 # im.shrink(60,orientation = 'vertical', energy = 'sobel5', alg = 'dyn')
 # im.to_jpeg("images/dolphin_shrank.jpg")
 
+
+#shrinking birds by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/birds.jpg")
+# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/birds_shrank.jpg")
+
+#shrinking stones by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/stones.jpg")
+# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/stones_shrank.jpg")
+
+#shrinking giza by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/giza_shrank.jpg")
+
+#displays the energy maps for giza
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_energy_pic('images/energy_map_entropy.jpg', 'entropy')
+
+# im.to_energy_pic('images/energy_map_sobel.jpg', 'sobel')
+# im.to_energy_pic('images/energy_map_kroon.jpg', 'kroon')
+# im.to_energy_pic('images/energy_map_sobel5.jpg', 'sobel5')
+# im.to_energy_pic('images/energy_map_scharr5.jpg', 'scharr5')
+
+
+#displays seams created by entropy
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_seam_pic("images/entropy.jpg",80, energy = 'entropy')
+
+# #displays seams created by sobel
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_seam_pic("images/sobel.jpg",80, energy = 'sobel')
+
+#displays seams created by scharr
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_seam_pic("images/scharr.jpg",80, energy = 'scharr')
+
+# #displays seams created by kroon
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_seam_pic("images/kroon.jpg",80, energy = 'kroon')
+
+# #displays seams created by sobel5
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_seam_pic("images/sobel5.jpg",80, energy = 'sobel5')
+
+
+
+#shrinking giza by 120 pixels in the vertical direciton by removing horizontal seams
+
+im = image.sc_Image.from_filepath("images/night.jpg")
+im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
+# im.to_jpeg("images/night_shrank.jpg")

@@ -266,6 +266,8 @@ class sc_Image:
         self.pixels = original_pixels
 
 
+
+
     # creates an images that higlights all discovered seams in red during a standard removal process, on the original picture and 
     # writes the new hilighted image to the specified file path 
     def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
@@ -281,7 +283,7 @@ class sc_Image:
 
         to_color = []
         for seam in seams:
-            to_color.append(map (lambda p : p.original_pos , seam))
+            to_color.append(map (lambda p : p.original_pos , filter(None,seam )))
         
 
         for seam in to_color:
@@ -308,7 +310,6 @@ class sc_Image:
         to_remove = seam
 
         # copy all pixels to return later if needed
-
 
         #try making new ones instead of deep copy
         if return_pixels:
@@ -432,6 +433,7 @@ class sc_Image:
             if not (0 < n <= self.height):
                 raise Exception("Number of seams to remove must be greater than 0 and less than image height %d" % (self.height))           
 
+
         else :
             raise Exception("Orientation must be 'vertical' or 'horizontal' ")
 
@@ -476,9 +478,6 @@ class sc_Image:
         
         if orientation == 'horizontal' :
             self.transpose()
-
-        else :
-            raise Exception("Orientation must be 'vertical' or 'horizontal' ")
 
         counter = 0
 
