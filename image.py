@@ -8,6 +8,7 @@ import Image
 # Grayscales the image so that we can run energy calculations on it
 def to_grayscale (img):
     return img.convert("L")
+
 # creates image sc object from python image library representation of a picture
 def from_pil (im):
     this_id = 0
@@ -38,22 +39,22 @@ class sc_Image:
         self.dim = 3
         self.PIL = PIL
     
-    @classmethod
-    def from_filepath(cls, filepath):
-        """ Given an image file turns into an sc_Image class.
-        eventually replace the im.getpixels calls with an im.getdata for performance reasons
-        """
+    # @classmethod
+    # def from_filepath(cls, filepath):
+    #     """ Given an image file turns into an sc_Image class.
+    #     eventually replace the im.getpixels calls with an im.getdata for performance reasons
+    #     """
 
-        pixels = {}
-        im = Image.open (filepath)
-        width, height = im.size
-        for h in range(height):
-            for w in range(width):
-                pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
-        return cls ((width, height), pixels, im)       
+    #     pixels = {}
+    #     im = Image.open (filepath)
+    #     width, height = im.size
+    #     for h in range(height):
+    #         for w in range(width):
+    #             pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
+    #     return cls ((width, height), pixels, im)       
     
     @classmethod
-    def from_filepath2 (cls, filepath):
+    def from_filepath (cls, filepath):
         """ Given an image file turns into an sc_Image class.
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
@@ -122,8 +123,8 @@ class sc_Image:
         else:
             return None
 
-    def make_mirror_lib (self, marg) :
-
+    def make_mirror_dic (self) :
+        marg = self.dim/2
         temp_pix = self.pixels
 
         for h in range(-marg, 0) + range(self.height, self.height + marg): 
@@ -148,7 +149,7 @@ class sc_Image:
                     elif h >= self.height:
                         temp_pix[(w,h)] = Pixel( (w,h), self.pixels[(self.width-1,self.height-1)].rgb)
                     else:
-                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb
+                        temp_pix[(w,h)] = Pixel((w,h), self.pixels[(self.width-1, h)].rgb)
 
         return temp_pix
 
@@ -211,7 +212,7 @@ class sc_Image:
             map (set_energy_e1_Kroon ,self.pixels.values() ) 
 
         elif (algorithm == 'sobel5' or algorithm == 'scharr5'):
-            temp_pix = make_mirror_lib (2)
+            temp_pix = self.make_mirror_dic()
 
             for h in range(self.height):
                 for w in range(self.width):
@@ -221,7 +222,10 @@ class sc_Image:
                         set_energy_e1_Scharr_5( temp_pix[(w,h)] )
 
         elif algorithm == 'entropy':
-            map (set_energy_entropy ,self.pixels.values() ) 
+            temp_pix = self.make_mirror_dic()
+            for h in range(self.height):
+                for w in range(self.width):
+                    set_energy_entropy( temp_pix[(w,h)] ) 
 
         else:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
@@ -283,7 +287,6 @@ class sc_Image:
 
         if orientation == 'horizontal' :
             self.transpose()
-
 
         original_pixels = copy.deepcopy(self.pixels)
         original_width = self.width
@@ -399,7 +402,7 @@ class sc_Image:
         self.width += 1
         return pixels
 
-    # averages the coler of two rgbs from pixles
+    # averages the coler of two rgbs from pixels
     def average_rbg(self, rgb1, rgb2):
         r1, g1, b1 = rgb1
         r2, g2, b2 = rgb2
@@ -428,8 +431,26 @@ class sc_Image:
             for h in range(self.height):
                 self.pixels[(w,h)].energy*=-1
 
+
+    def validate_number_of_seams(self, n, orientation):
+
+        if orientation == 'vertical':
+            if not (0 < n <= self.width):
+                raise Exception("Number of seams to remove must be greater than 0 and less than the image width %d" % (self.width))
+
+        
+        elif orientation == 'horizontal' :
+            if not (0 < n <= self.height):
+                raise Exception("Number of seams to remove must be greater than 0 and less than image height %d" % (self.height))           
+
+        else :
+            raise Exception("Orientation must be 'vertical' or 'horizontal' ")
+
+
     #calculate the lowest energy seams then add duplicates of them to the picture
     def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn', inverse=False):
+
+        self.validate_number_of_seams(new_pixels, orientation)
 
         if orientation == 'horizontal' :
             self.transpose()
@@ -462,11 +483,17 @@ class sc_Image:
     # shrinks a picture by continouslly removing the lowest energy seem
     def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
 
-        counter = 0
-
-        #if we are taking horizontal seams transpose the image first
+        self.validate_number_of_seams(to_remove, orientation)
+        
         if orientation == 'horizontal' :
             self.transpose()
+
+        else :
+            raise Exception("Orientation must be 'vertical' or 'horizontal' ")
+
+        counter = 0
+
+
 
         for i in range(to_remove) :
             counter += 1
@@ -484,15 +511,54 @@ class sc_Image:
          self.enlarge(new_pixels,orientation,energy,alg,True)
 
 
-##    def remove_obj (self, orientation = "vertical", energy = 'sobel', alg = 'dyn', x1, x2, y1, y2)
-##        to_remove = 0
-##        if (orientation == "vertical"):
-##            to_remove = y2 - y1
-##            for i in range(y1, to_remove):
-##        else:
-##            ro_revome = x2 - x1
-##            for i in range(x1, to_remove):
 
+    def enlarge_object(self, seams, energy = 'sobel', alg = 'dyn'):
+        self.shrink(seams/2, 'vertical', energy, alg)
+        self.shrink(seams/2, 'horizontal', energy, alg)
+
+        self.enlarge(seams/2, 'vertical', energy, alg)
+        self.enlarge(seams/2, 'horizontal', energy, alg)
+
+
+    def check_rgb(self, rgb1, rgb2, tolerance):
+        r1,g1,b1 = rgb1
+        r2,g2,b2 = rgb2
+
+        return (r2-tolerance < r1 < r2+tolerance and  
+            g2-tolerance < g1 < g2+tolerance and b2-tolerance < b1 < b2+tolerance )
+
+
+    #remove an object that has been painted over with a color with rgb value "rgb".
+    #tolerance specifies how closely a pixel must match "rgb" to be removed
+    def remove_object(self,rgb, tolerance = 5, energy = 'sobel', alg = 'dyn'):
+
+        max_width = 0
+        for h in range(self.height): 
+            width = 0
+            for w in range(self.width):
+                if self.check_rgb(self.pixels[(w,h)].rgb, rgb, tolerance):
+                    self.pixels[(w,h)].energy = -99999999999
+                    self.pixels[(w,h)].to_remove = True
+                    self.pixels[(w,h)].recalculate = False
+                    width += 1
+
+            if width > max_width:
+                max_width = width
+
+
+        self.shrink(max_width, energy = energy, alg = alg )
+
+        #fix the original positions for enlargement
+        for h in range(self.height): 
+            for w in range(self.width):
+                self.pixels[(w,h)].original_pos = self.pixels[(w,h)].pos
+        
+        self.enlarge(max_width, energy = energy, alg = alg)
+
+
+    def enlarge_objects (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
+         self.shrink(new_pixels,orientation,energy,alg)
+         self.enlarge(new_pixels,orientation,energy,alg,True)
  
     def transpose (self) :
         new_pix = {}
@@ -521,15 +587,19 @@ class Pixel:
 
         self.energy = 0
 
+        self.to_remove = False
+
         self.recalculate = True
 
     # shifts pixle position by updating ivar
     def shift_pos(self, dx, dy):
         self.pos = (self.pos[0]+dx, self.pos[1]+dy)
 
-    # mark to see if it needs to be re energized
+
+    #flag to recalculate energy unless this pixel is part of an object getting removed
     def to_recalculate(self):
-        self.recalculate = True
+        if not self.to_remove:
+            self.recalculate = True
 
     # to string function
     def __str__(self):
