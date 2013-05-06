@@ -58,8 +58,6 @@ def Sobel_five_op(pixel, neighbors):
 def Scharr_five_op(pixel, neighbors):
     return five_five_filter(pixel, neighbors, 6, 3, 2, 2, 1, 1)
 
-
-# TODO: finish this function
 #gets energy using entropy algorithm. helper methods may be added later
 #Code still buggy, but getting there. Will be implemented along with
 #image expansion for the final submission
