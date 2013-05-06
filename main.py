@@ -163,13 +163,6 @@ import image
 #Object enlargement
 #==================#
 
-# object enlargement on the sun
-
-# im = image.sc_Image.from_filepath("images/sunset.jpeg")
-# im.enlarge_object_1d(40, orientation = 'horizontal')
-# im.enlarge_object_1d(40, orientation = 'vertical')
-# im.to_jpeg("images/big_sunset.jpg")
-
 # im = image.sc_Image.from_filepath("images/skateboarder.jpg")
 # im.enlarge_object_1d(40)
 # im.to_jpeg("images/skateboarder_1D_enlarged.jpg")
