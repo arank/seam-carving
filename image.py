@@ -7,7 +7,7 @@ import Image
 
 # Grayscales the image so that we can run energy calculations on it
 def to_grayscale (img):
-    
+
     return img.convert("L")
 
 # creates image sc object from python image library representation of a picture
@@ -55,12 +55,13 @@ class sc_Image:
     #             pixels[(w,h)] = Pixel( (w,h), im.getpixel((w,h)) )
     #     return cls ((width, height), pixels, im)       
     
+
+    #BEGINNING OF PUBLIC METHODS
+
+    #Given an image file turns into an sc_Image class.
+    #Replaced the im.getpixels calls with an im.getdata for performance reasons
     @classmethod
     def from_filepath (cls, filepath):
-
-        """ Given an image file turns into an sc_Image class.
-        Replaced the im.getpixels calls with an im.getdata for performance reasons
-        """
 
         print 'converting to object'
         im = Image.open (filepath)
@@ -178,6 +179,24 @@ class sc_Image:
         self.enlarge(max_width, energy = energy, alg = alg)
 
 
+    #Uses the grayscale of the image to get an energy map
+    def to_energy_pic (self, filepath, energy = 'sobel'):
+
+        original_pixels = self.pixels
+        gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
+        self.pixels = gray_pixels
+        self.set_energies(energy)
+
+        data = [0] * (self.width * self.height)
+        for w in range (self.width):
+            for h in range(self.height):
+                data[h*self.width + w] = self.pixels[(w,h)].energy
+        im = Image.new("L", (self.width, self.height))
+        im.putdata(data)
+        im.save(filepath, "JPEG")
+
+        self.pixels = original_pixels
+
     # creates an images that higlights all discovered seams in red during a standard removal process, on the original picture and 
     # writes the new hilighted image to the specified file path 
     def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
@@ -208,6 +227,8 @@ class sc_Image:
             self.transpose()
 
         self.to_jpeg(filepath)
+
+    #END OF PUBLIC METHODS
 
     # gets neigbors to pixel at given position in image in form of pixle list
     def get_neighbors_simple (self, pos, pixels):
@@ -389,25 +410,6 @@ class sc_Image:
     def top_horz_row (self) :
 
         return map (self.get_pixel, [(w,0) for w in range(self.width)] )
-
-
-    #Uses the grayscale of the image to get an energy map
-    def to_energy_pic (self, filepath, energy = 'sobel'):
-
-        original_pixels = self.pixels
-        gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
-        self.pixels = gray_pixels
-        self.set_energies(energy)
-
-        data = [0] * (self.width * self.height)
-        for w in range (self.width):
-            for h in range(self.height):
-                data[h*self.width + w] = self.pixels[(w,h)].energy
-        im = Image.new("L", (self.width, self.height))
-        im.putdata(data)
-        im.save(filepath, "JPEG")
-
-        self.pixels = original_pixels
 
 
     # removes vertical seams from the image after discovery
