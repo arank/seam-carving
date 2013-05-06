@@ -7,10 +7,12 @@ import Image
 
 # Grayscales the image so that we can run energy calculations on it
 def to_grayscale (img):
+    
     return img.convert("L")
 
 # creates image sc object from python image library representation of a picture
 def from_pil (im):
+
     this_id = 0
     pixels = {}
     width, height = im.size
@@ -55,6 +57,7 @@ class sc_Image:
     
     @classmethod
     def from_filepath (cls, filepath):
+
         """ Given an image file turns into an sc_Image class.
         Replaced the im.getpixels calls with an im.getdata for performance reasons
         """
@@ -66,8 +69,149 @@ class sc_Image:
         print 'calculating energies'
         return cls ((width, height), pixels, im)
 
+
+    #write a jpeg representation of this image to a file
+    def to_jpeg (self, filepath):
+
+        data = [(0,0, 0)] * (self.width * self.height)
+        for w in range (self.width):
+            for h in range(self.height):
+                # print "(%s, %s); (%s, %s)" % (w,h, self.width, self.height)
+                data[h*self.width + w] = self.pixels[(w,h)].rgb
+        im = Image.new("RGB", (self.width, self.height))
+        im.putdata(data)
+        im.save(filepath, "JPEG")
+
+
+    # shrinks a picture by continouslly removing the lowest energy seem
+    def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
+
+        self.validate_number_of_seams(to_remove, orientation)
+        if orientation == 'horizontal' :
+            self.transpose()
+        counter = 0
+        for i in range(to_remove) :
+            counter += 1
+            self.set_energies (energy)
+            seam = self.remove_seam_vert2 (alg)
+            print "Removed %d seams" % (counter)
+        if orientation == 'horizontal' :
+            self.transpose() 
+
+
+    #calculate the lowest energy seams then add duplicates of them to the picture
+    def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn', inverse=False):
+
+        self.validate_number_of_seams(new_pixels, orientation)
+
+        if orientation == 'horizontal' :
+            self.transpose()
+
+        original_pixels = copy.deepcopy(self.pixels)
+        original_width =self.width
+        original_height = self.height
+        seams = self.get_n_seams(new_pixels, energy, alg, inverse)
+
+        print "Enlarging image..."
+
+        self.width = original_width
+        self.height = original_height
+        for s in seams:
+            self.insert_seam(original_pixels, s)
+        self.pixels = original_pixels
+
+        if orientation == 'horizontal' :
+            self.transpose()
+
+
+    # one dimensional implementation of which operates to resize all high energy objects by shrinking the
+    # background around them and inverting and enlarging the objects in the new background, 
+    # writing the new image to an output file
+    def enlarge_object_1d (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
+
+         self.shrink(new_pixels,orientation,energy,alg)
+         self.enlarge(new_pixels,orientation,energy,alg,True)
+
+
+    # two dimensional implementation of object enlargement, which grows the object in two dimensions
+    # by them same method writing the new image to an output file
+    def enlarge_object(self, seams, energy = 'sobel', alg = 'dyn'):
+
+        self.shrink(seams/2, 'vertical', energy, alg)
+        self.shrink(seams/2, 'horizontal', energy, alg)
+
+        self.enlarge(seams/2, 'vertical', energy, alg)
+        self.enlarge(seams/2, 'horizontal', energy, alg)
+
+
+    #remove an object that has been painted over with a color with rgb value "rgb".
+    #tolerance specifies how closely a pixel must match "rgb" to be removed
+    def remove_object(self,rgb, tolerance = 5, energy = 'sobel', alg = 'dyn'):
+
+         # compare the rgb values for two pixels to check for changes is coleration
+         # denoting the start of an object
+        def check_rgb(self, rgb1, rgb2, tolerance):
+            r1,g1,b1 = rgb1
+            r2,g2,b2 = rgb2
+            return (r2-tolerance < r1 < r2+tolerance and  
+                g2-tolerance < g1 < g2+tolerance and b2-tolerance < b1 < b2+tolerance )
+
+        max_width = 0
+        for h in range(self.height): 
+            width = 0
+            for w in range(self.width):
+                if self.check_rgb(self.pixels[(w,h)].rgb, rgb, tolerance):
+                    self.pixels[(w,h)].energy = -99999999999
+                    self.pixels[(w,h)].to_remove = True
+                    self.pixels[(w,h)].recalculate = False
+                    width += 1
+            if width > max_width:
+                max_width = width
+
+        self.shrink(max_width, energy = energy, alg = alg )
+
+        #fix the original positions for enlargement
+        for h in range(self.height): 
+            for w in range(self.width):
+                self.pixels[(w,h)].original_pos = self.pixels[(w,h)].pos
+        
+        self.enlarge(max_width, energy = energy, alg = alg)
+
+
+    # creates an images that higlights all discovered seams in red during a standard removal process, on the original picture and 
+    # writes the new hilighted image to the specified file path 
+    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
+
+        if orientation == 'horizontal' :
+            self.transpose()
+
+        original_pixels = copy.deepcopy(self.pixels)
+        original_width = self.width
+        original_height = self.height
+        
+        seams = self.get_n_seams(n, energy, alg)
+
+        to_color = []
+        for seam in seams:
+            to_color.append(map (lambda p : p.original_pos , filter(None,seam )))
+        
+
+        for seam in to_color:
+            for pos in seam:
+                original_pixels[pos].rgb = (300,0,0)
+
+        self.pixels = original_pixels
+        self.width = original_width
+        self.height = original_height
+
+        if orientation == 'horizontal' :
+            self.transpose()
+
+        self.to_jpeg(filepath)
+
     # gets neigbors to pixel at given position in image in form of pixle list
     def get_neighbors_simple (self, pos, pixels):
+
         x, y = pos
         data = []
         for j in range(y+(self.dim/2), y-(self.dim/2+1), -1):
@@ -78,8 +222,10 @@ class sc_Image:
                     data.append(None)
         return data
 
+
     # flags neigboring pixles to pixle being removed so they can be recalculated by energy algorithm 
     def recalculate_neighbors(self, pos):
+
         for p in self.get_neighbors_simple (pos, self.pixels):
             if p is not None:
                 p.to_recalculate()
@@ -93,7 +239,7 @@ class sc_Image:
         if (self.dim == 3):
             edge_replace = {0 : [2,6,8], 1 : [7], 2 : [0,8,6],
             3 : [5], 5 : [3], 6 : [0,8,2],  7 : [1], 8 : [2,6,0]}
-        
+
             for i in range(len(data)):
                 if data[i] is None:
                     for replace_with in edge_replace[i] : 
@@ -105,13 +251,16 @@ class sc_Image:
 
     # gets pixel object at given postion
     def get_pixel(self, pos):
+
         if pos in self.pixels:
             return self.pixels[pos]
         else:
             return None
 
+
     # makes a pixel dictionary of the mirror reflection of the image and retunrs it
     def make_mirror_dic (self) :
+
         marg = self.dim/2
         temp_pix = self.pixels
 
@@ -140,10 +289,11 @@ class sc_Image:
                         temp_pix[(w,h)] = Pixel((w,h), (w,h), self.pixels[(self.width-1, h)].gray)
         return temp_pix
 
+
     # sets the energies of each pixel using the specified algorithm
     def set_energies (self, algorithm = 'sobel') :
-        #map the energy calculating function to the pixel objects
 
+        #map the energy calculating function to the pixel objects
         #print self.pixels[(127,107)
 
         def set_energy_e1_Sobel (pixel):
@@ -215,7 +365,6 @@ class sc_Image:
             raise Exception("%s is not one of the implemented algorithms" % algorithm)
 
 
-
     # If resize is vertical, then calls seam_for_start_vert on every 
     # pixel at the left edge of the image and finds the lowest.
     # If resize is horizontal, then calls seam_for_start_hor on every
@@ -228,28 +377,23 @@ class sc_Image:
         else :
             return seam_dyn(self)
         return seam
+
     
     # gets the leftmost verical row in ordered list
     def top_vert_row (self) :
+
         return map (self.get_pixel, [(0,h) for h in range(self.height)] )
+
 
     # gets the top horizonal row of pixles in ordered list
     def top_horz_row (self) :
+
         return map (self.get_pixel, [(w,0) for w in range(self.width)] )
 
-    #write a jpeg representation of this image to a file
-    def to_jpeg (self, filepath):
-        data = [(0,0, 0)] * (self.width * self.height)
-        for w in range (self.width):
-            for h in range(self.height):
-                # print "(%s, %s); (%s, %s)" % (w,h, self.width, self.height)
-                data[h*self.width + w] = self.pixels[(w,h)].rgb
-        im = Image.new("RGB", (self.width, self.height))
-        im.putdata(data)
-        im.save(filepath, "JPEG")
 
     #Uses the grayscale of the image to get an energy map
     def to_energy_pic (self, filepath, energy = 'sobel'):
+
         original_pixels = self.pixels
         gray_pixels, w, h = from_pil (to_grayscale(self.PIL))
         self.pixels = gray_pixels
@@ -264,40 +408,6 @@ class sc_Image:
         im.save(filepath, "JPEG")
 
         self.pixels = original_pixels
-
-
-
-
-    # creates an images that higlights all discovered seams in red during a standard removal process, on the original picture and 
-    # writes the new hilighted image to the specified file path 
-    def to_seam_pic (self, filepath, n, energy = 'sobel', alg = 'dyn', orientation = 'vertical'):
-
-        if orientation == 'horizontal' :
-            self.transpose()
-
-        original_pixels = copy.deepcopy(self.pixels)
-        original_width = self.width
-        original_height = self.height
-
-        seams = self.get_n_seams(n, energy, alg)
-
-        to_color = []
-        for seam in seams:
-            to_color.append(map (lambda p : p.original_pos , filter(None,seam )))
-        
-
-        for seam in to_color:
-            for pos in seam:
-                original_pixels[pos].rgb = (300,0,0)
-
-        self.pixels = original_pixels
-        self.width = original_width
-        self.height = original_height
-
-        if orientation == 'horizontal' :
-            self.transpose()
-
-        self.to_jpeg(filepath)
 
 
     # removes vertical seams from the image after discovery
@@ -356,41 +466,34 @@ class sc_Image:
     def insert_seam(self,pixels, seam):
 
         for pixel in seam:
-
             h = pixel.pos[1]
 
             for w in range (self.width-1, -1, -1):
-
-
                 if pixel.original_pos == (w,h):
-                
                     pixel.pos = (w+1,h)
                     pixels[(w+1,h)] = pixel
-                    
                     #update rgb value
                     left = pixels[(w,h)].rgb
 
                     if (w+2,h) in pixels:
                         right = pixels[(w+2,h)].rgb
-
                     else :
                         right  = pixel.rgb
+
                     pixel.rgb = self.average_rbg(left, right)
-                    
                     break
 
                 else :
                     pixels[(w,h)].shift_pos(1,0)
                     pixels[(w+1,h)] = pixels[(w,h)]
 
-
-
-
         self.width += 1
         return pixels
 
+
     # averages the coler of two rgbs from pixels
     def average_rbg(self, rgb1, rgb2):
+
         r1, g1, b1 = rgb1
         r2, g2, b2 = rgb2
 
@@ -398,7 +501,6 @@ class sc_Image:
 
     # finds n seams for image enlargement, and returns thems as a list of pixle lists
     def get_n_seams(self,n, energy, alg,  inverse=False) :
-
 
         seams = []
         for i in range(n):
@@ -409,13 +511,13 @@ class sc_Image:
             seams.append( seam )
 
             print "Got %d seams" % (i+1)
-
         
         return seams
 
     #  inverts all the energies in the image to preform backgrounds aware resizing of objetcs in
     # methods like object enlargement
     def invert_energies(self):
+
         for w in range (self.width):
             for h in range(self.height):
                 self.pixels[(w,h)].energy*=-1
@@ -427,131 +529,19 @@ class sc_Image:
         if orientation == 'vertical':
             if not (0 < n <= self.width):
                 raise Exception("Number of seams to remove must be greater than 0 and less than the image width %d" % (self.width))
-
         
         elif orientation == 'horizontal' :
             if not (0 < n <= self.height):
                 raise Exception("Number of seams to remove must be greater than 0 and less than image height %d" % (self.height))           
 
-
         else :
             raise Exception("Orientation must be 'vertical' or 'horizontal' ")
 
 
-    #calculate the lowest energy seams then add duplicates of them to the picture
-    def enlarge (self,  new_pixels, orientation = 'vertical', energy = 'e1', alg = 'dyn', inverse=False):
-
-        self.validate_number_of_seams(new_pixels, orientation)
-
-        if orientation == 'horizontal' :
-            self.transpose()
-
-
-        original_pixels = copy.deepcopy(self.pixels)
-
-        original_width =self.width
-        original_height = self.height
-
-        seams = self.get_n_seams(new_pixels, energy, alg, inverse)
-
-        print "Enlarging image..."
-
-        self.width = original_width
-        self.height = original_height
-
-       
-        for s in seams:
-            self.insert_seam(original_pixels, s)
-
-
-        self.pixels = original_pixels
-
-        if orientation == 'horizontal' :
-            self.transpose()
-
-
-
-    # shrinks a picture by continouslly removing the lowest energy seem
-    def shrink (self, to_remove, orientation = "vertical", energy = 'sobel', alg = 'dyn'):
-
-        self.validate_number_of_seams(to_remove, orientation)
-        
-        if orientation == 'horizontal' :
-            self.transpose()
-
-        counter = 0
-
-
-
-        for i in range(to_remove) :
-            counter += 1
-            self.set_energies (energy)
-
-            seam = self.remove_seam_vert2 (alg)
-
-            print "Removed %d seams" % (counter)
-
-        if orientation == 'horizontal' :
-            self.transpose()    
-
-    # one dimensional implementation of which operates to resize all high energy objects by shrinking the
-    # background around them and inverting and enlarging the objects in the new background, 
-    # writing the new image to an output file
-    def enlarge_object_1d (self, new_pixels, orientation="vertical", energy='sobel', alg='dyn'):
-         self.shrink(new_pixels,orientation,energy,alg)
-         self.enlarge(new_pixels,orientation,energy,alg,True)
-
-
-    # two dimensional implementation of object enlargement, which grows the object in two dimensions
-    # by them same method writing the new image to an output file
-    def enlarge_object(self, seams, energy = 'sobel', alg = 'dyn'):
-        self.shrink(seams/2, 'vertical', energy, alg)
-        self.shrink(seams/2, 'horizontal', energy, alg)
-
-        self.enlarge(seams/2, 'vertical', energy, alg)
-        self.enlarge(seams/2, 'horizontal', energy, alg)
-
-
-
-
-    #remove an object that has been painted over with a color with rgb value "rgb".
-    #tolerance specifies how closely a pixel must match "rgb" to be removed
-    def remove_object(self,rgb, tolerance = 5, energy = 'sobel', alg = 'dyn'):
-         # compare the rgb values for two pixels to check for changes is coleration
-         # denoting the start of an object
-        def check_rgb(self, rgb1, rgb2, tolerance):
-            r1,g1,b1 = rgb1
-            r2,g2,b2 = rgb2
-
-            return (r2-tolerance < r1 < r2+tolerance and  
-                g2-tolerance < g1 < g2+tolerance and b2-tolerance < b1 < b2+tolerance )
-
-        max_width = 0
-        for h in range(self.height): 
-            width = 0
-            for w in range(self.width):
-                if self.check_rgb(self.pixels[(w,h)].rgb, rgb, tolerance):
-                    self.pixels[(w,h)].energy = -99999999999
-                    self.pixels[(w,h)].to_remove = True
-                    self.pixels[(w,h)].recalculate = False
-                    width += 1
-
-            if width > max_width:
-                max_width = width
-
-
-        self.shrink(max_width, energy = energy, alg = alg )
-
-        #fix the original positions for enlargement
-        for h in range(self.height): 
-            for w in range(self.width):
-                self.pixels[(w,h)].original_pos = self.pixels[(w,h)].pos
-        
-        self.enlarge(max_width, energy = energy, alg = alg)
-
     # transposes the image by manipulating the dictionary of pixles, so we can run horizontal seams without changing the entire pathfinding algorithm,
     # hence allowing for generality in the seam discovery code.
     def transpose (self) :
+
         new_pix = {}
         for i in range(self.width):
             for j in range(self.height):
@@ -560,6 +550,7 @@ class sc_Image:
         tmp = self.height
         self.height = self.width
         self.width = tmp
+
         
 # Class that encapsulates pixle data in image sc object including the energy, the unique identifier, the color the postion
 # and a suite of methods to interact with it in the context of the image object
