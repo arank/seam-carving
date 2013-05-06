@@ -23,7 +23,7 @@ Shrinks an image in one direction.
 *to_remove (int): the number of pixels to be removed from the image.
 *orientation (string): the direction the seams run in. The two options are 'vertical' and 'horizontal'. Vertical will alter the image's width and horizontal will change its height.
 *energy (string): the energy function to be applied to the image. The options are 'sobel' 'scharr' 'kroon' 'sobel5' 'scharr5' and 'entropy'. The first three use 3x3 pixel filters with varying weights. The next two use 5x5 pixel filters. The final one uses a 9x9 histogram to calculate the entropy of a every pixel. Be aware that the first three will run more quickly than the others.
-*alg (string): the shortest path algorithm to be used. The two options are 'dijk' and 'dyn'. Be aware that the first runs much more slowly than the second.
+*alg (string): the shortest path algorithm to be used. The two options are 'dijk' and 'dyn'. Be aware that dijkstra's doesn't work with enlarge or remove object due to the way it deals with negative energy values.
 
 -->sc_Image.enlarge(new_pixels, orientation = 'vertical', energy = '', alg = 'dyn')
 Enlarges an image in one direction.
