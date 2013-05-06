@@ -101,7 +101,7 @@ import image
 #shrinking birds by 120 pixels
 
 # im = image.sc_Image.from_filepath("images/birds.jpg")
-# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.shrink(180,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
 # im.to_jpeg("images/birds_shrank.jpg")
 
 

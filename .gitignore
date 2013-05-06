@@ -43,3 +43,7 @@ new_landscape2.jpg
 new_energy_skateboarder.jpg
 
 old_energy_landscape.jpg
+
+*.mov
+
+video/.DS_Store
