@@ -44,6 +44,7 @@ new_energy_skateboarder.jpg
 
 old_energy_landscape.jpg
 
+test_images/
 *.mov
 
 video/.DS_Store
