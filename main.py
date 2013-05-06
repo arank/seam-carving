@@ -27,12 +27,13 @@ import image
 # im.to_energy_pic('images/castle_scharr.jpg', 'scharr')
 # im.to_energy_pic('images/castle_kroon.jpg', 'kroon')
 
-# Object enlarement on the sun
 
-# im = image.sc_Image.from_filepath("images/sunset.jpeg")
-# im.enlarge_object_1d(40, orientation = 'horizontal')
-# im.enlarge_object_1d(40, orientation = 'vertical')
-# im.to_jpeg("images/big_sunset.jpg")
+#shrinking giza by 120 pixels in the vertical direciton by removing horizontal seams
+
+# im = image.sc_Image.from_filepath("images/night.jpg")
+# im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
+# im.to_jpeg("images/night_shrank.jpg")
+
 
 # Removes the colored-in skateboarder from the skateboarder image
 
@@ -53,24 +54,27 @@ import image
 # as well as shrinks the image.
 
 # im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
-
 #im.shrink(30,energy = 'sobel', alg = 'dyn')
-
 #im.to_jpeg("images/castle_small.jpg")
 
 
 
 #enlarging landscape.jpg by 50 seams
 
-
-
 # im = image.sc_Image.from_filepath("images/landscape.jpg")
-# im.shrink(10 ,orientation = 'horizontal', energy = 'sobel', alg = 'dijk')
-# im.to_jpeg("images/landscape_dijk.jpg")
+# im.enlarge(50,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/landscape_enlarged.jpg")
 
-#dijkstra seams
+
+
+#displays seams found by dijkstra's algorithm
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dijk')
+
+#displays seams found by dynamic programming
 # im = image.sc_Image.from_filepath("images/landscape.jpg")
 # im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dyn')
+
 
 #enlarging skateboarder by 80 pixels
 
@@ -152,10 +156,11 @@ im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
 # im = image.sc_Image.from_filepath("images/giza.jpg")
 # im.to_seam_pic("images/scharr5.jpg",80, energy = 'scharr5')
 
+# Object enlarement on the sun
+
+# im = image.sc_Image.from_filepath("images/sunset.jpeg")
+# im.enlarge_object_1d(40, orientation = 'horizontal')
+# im.enlarge_object_1d(40, orientation = 'vertical')
+# im.to_jpeg("images/big_sunset.jpg")
 
 
-#shrinking giza by 120 pixels in the vertical direciton by removing horizontal seams
-
-# im = image.sc_Image.from_filepath("images/night.jpg")
-# im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
-# im.to_jpeg("images/night_shrank.jpg")
