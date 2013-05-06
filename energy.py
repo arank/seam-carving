@@ -64,23 +64,16 @@ def Scharr_five_op(pixel, neighbors):
 #Code still buggy, but getting there. Will be implemented along with
 #image expansion for the final submission
 def entropy(pixel, square):
-   num_bins = 10
-   pix_range = 16844000/1000
+   num_bins = 25
    #b = pix_range/num_bins
-   b = 50
+   b = 0
    hist_len = len(square)
    dim = hist_len**(.5)
    histogram = {}
    for i in range (num_bins):
-      histogram[b + (b/(num_bins/2))*i] = 1
+      histogram[b + (256/num_bins)*i] = 1
    #histogram = {b:1, 2*b:1, 3*b:1, 4*b:1, 5*b:1, 6*b:1, 7*b:1, 8*b:1, 9*b:1, 10*b:1}
    for x in range (hist_len):
-       if square[x] == None:
-           square[x] = pixel
-##           for i in range (hist_len):
-##               if (x == i):
-##                   square[x] = square[hist_len - 1 - x]
-##                   square[hist_len - 1 - 2*x] = square[hist_len - 1 - x]
        for k, v in histogram.iteritems():
           if (square[x].gray < k):                
              histogram[k] += 1
@@ -93,9 +86,8 @@ def entropy(pixel, square):
    #http://upload.wikimedia.org/math/8/7/e/87efdf0d38947240683250d3a24466e0.png
    pixel.energy = -sum([p*(log(p, 2)) for p in square_prob])
    #print pixel.energy
-   pixel.energy = pixel.energy ** 10
+   pixel.energy = pixel.energy**5
    #print pixel.energy
    pixel.recalculate = False
-   print pixel.energy
    return pixel
 

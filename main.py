@@ -133,8 +133,8 @@ import image
 
 
 #displays seams created by entropy
-# im = image.sc_Image.from_filepath("images/giza.jpg")
-# im.to_seam_pic("images/entropy.jpg",80, energy = 'entropy')
+im = image.sc_Image.from_filepath("images/giza.jpg")
+im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
 
 # #displays seams created by sobel
 # im = image.sc_Image.from_filepath("images/giza.jpg")
