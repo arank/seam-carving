@@ -104,6 +104,12 @@ import image
 # im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
 # im.to_jpeg("images/birds_shrank.jpg")
 
+
+# im = image.sc_Image.from_filepath("images/skateboarder.jpg")
+# im.enlarge_object_1d(40)
+# im.to_jpeg("images/skateboarder_1D_enlarged.jpg")
+
+
 #shrinking stones by 120 pixels
 
 # im = image.sc_Image.from_filepath("images/stones.jpg")
@@ -142,14 +148,14 @@ import image
 # im = image.sc_Image.from_filepath("images/giza.jpg")
 # im.to_seam_pic("images/kroon.jpg",80, energy = 'kroon')
 
-# #displays seams created by sobel5
+#displays seams created by scharr5
 # im = image.sc_Image.from_filepath("images/giza.jpg")
-# im.to_seam_pic("images/sobel5.jpg",80, energy = 'sobel5')
+# im.to_seam_pic("images/scharr5.jpg",80, energy = 'scharr5')
 
 
 
 #shrinking giza by 120 pixels in the vertical direciton by removing horizontal seams
 
-im = image.sc_Image.from_filepath("images/night.jpg")
-im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
+# im = image.sc_Image.from_filepath("images/night.jpg")
+# im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
 # im.to_jpeg("images/night_shrank.jpg")
