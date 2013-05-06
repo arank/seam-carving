@@ -11,14 +11,18 @@ import image
 #The following strings may be used for seam derivation (the alg argument):
 #'dyn', 'dijk'
 
-#The following strings can be used can be used for the orientation argument:
+# The following strings can be used can be used for the orientation argument:
 # 'vertical' or 'horizontal'
-#denoting vertical or horizontal seams
+# denoting vertical or horizontal seams
 
 
-#Usage examples:
+# Usage examples:
 
-#Creating several energy maps of castle image
+
+#Energy Maps
+#==================#
+
+# Creating several energy maps of castle image
 
 # im = image.sc_Image.from_filepath("images/castle.jpg")
 # im.to_energy_pic('images/castle_sobel5.jpg', 'sobel5')
@@ -26,14 +30,85 @@ import image
 # im.to_energy_pic('images/castle_sobel.jpg', 'sobel')
 # im.to_energy_pic('images/castle_scharr.jpg', 'scharr')
 # im.to_energy_pic('images/castle_kroon.jpg', 'kroon')
+# im.to_energy_pic('images/castle_entropy.jpg', 'entropy')
+
+# Displays the energy maps for giza
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_energy_pic('images/energy_map_entropy.jpg', 'entropy')
+# im.to_energy_pic('images/energy_map_sobel.jpg', 'sobel')
+# im.to_energy_pic('images/energy_map_kroon.jpg', 'kroon')
+# im.to_energy_pic('images/energy_map_sobel5.jpg', 'sobel5')
+# im.to_energy_pic('images/energy_map_scharr5.jpg', 'scharr5')
 
 
-#shrinking giza by 120 pixels in the vertical direciton by removing horizontal seams
+#Image Shrinking
+#==================#
+
+# Shrinks giza by 120 pixels in the vertical direciton by removing horizontal seams
 
 # im = image.sc_Image.from_filepath("images/night.jpg")
 # im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
 # im.to_jpeg("images/night_shrank.jpg")
 
+
+#shrinking sunset by 60 pixels
+
+# im = image.sc_Image.from_filepath("images/sunset.jpeg")
+# im.shrink(60,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/sunset_shrank.jpg")
+
+#shrinking dolphin by 60 pixels
+#some of his fin is cut off because it is similar in color to the sky
+
+# im = image.sc_Image.from_filepath("images/dolphin.jpg")
+# im.shrink(60,orientation = 'vertical', energy = 'sobel5', alg = 'dyn')
+# im.to_jpeg("images/dolphin_shrank.jpg")
+
+#shrinking birds by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/birds.jpg")
+# im.shrink(180,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/birds_shrank.jpg")
+
+#shrinking stones by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/stones.jpg")
+# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/stones_shrank.jpg")
+
+#shrinking giza by 120 pixels
+
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/giza_shrank.jpg")
+
+
+#Image Enlargement
+#==================#
+
+# Enlarges landscape.jpg by 50 seams
+
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.enlarge(50,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
+# im.to_jpeg("images/landscape_enlarged.jpg")
+
+#enlarging skateboarder by 80 pixels
+
+# im = image.sc_Image.from_filepath("images/skateboarder.jpg")
+# im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
+# im.to_jpeg("images/skateboarder_enlarged.jpg")
+
+#enlarging plane by 80 pixels
+
+# im = image.sc_Image.from_filepath("images/red_plane.jpg")
+# im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
+# im.to_jpeg("images/red_plane_enlarged.jpg")
+
+
+
+
+#Object removal
+#==================#
 
 # Removes the colored-in skateboarder from the skateboarder image
 
@@ -49,24 +124,6 @@ import image
 # im.to_jpeg("images/dolphin_object_removed.jpg")
 
 
-
-# Gives the highligheted seams picure when 80 seams are removed with entropy energy finding
-# as well as shrinks the image.
-
-# im.to_seam_pic("images/skateboarder_entropy_seams.jpg",80, energy = 'entropy')
-#im.shrink(30,energy = 'sobel', alg = 'dyn')
-#im.to_jpeg("images/castle_small.jpg")
-
-
-
-#enlarging landscape.jpg by 50 seams
-
-# im = image.sc_Image.from_filepath("images/landscape.jpg")
-# im.enlarge(50,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("images/landscape_enlarged.jpg")
-
-
-
 #displays seams found by dijkstra's algorithm
 # im = image.sc_Image.from_filepath("images/landscape.jpg")
 # im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dijk')
@@ -76,69 +133,12 @@ import image
 # im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dyn')
 
 
-#enlarging skateboarder by 80 pixels
-
-# im = image.sc_Image.from_filepath("images/skateboarder.jpg")
-# im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("images/skateboarder_enlarged.jpg")
-
-#enlargin plane by 80 pixels
-
-# im = image.sc_Image.from_filepath("images/red_plane.jpg")
-# im.enlarge(80,orientation = 'vertical', energy = 'sobel', alg = 'dyn')
-# im.to_jpeg("images/red_plane_enlarged.jpg")
-
-#shrinking sunset by 60 pixels
-
-# im = image.sc_Image.from_filepath("images/sunset.jpeg")
-# im.shrink(60,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("images/sunset_shrank.jpg")
-
-#shrinking dolphin by 60 pixels
-#some of his fin is cut off because it is similar in color to the sky
-
-# im = image.sc_Image.from_filepath("images/dolphin.jpg")
-# im.shrink(60,orientation = 'vertical', energy = 'sobel5', alg = 'dyn')
-# im.to_jpeg("images/dolphin_shrank.jpg")
-
-
-#shrinking birds by 120 pixels
-
-# im = image.sc_Image.from_filepath("images/birds.jpg")
-# im.shrink(180,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("images/birds_shrank.jpg")
-
-
-# im = image.sc_Image.from_filepath("images/skateboarder.jpg")
-# im.enlarge_object_1d(40)
-# im.to_jpeg("images/skateboarder_1D_enlarged.jpg")
-
-
-#shrinking stones by 120 pixels
-
-# im = image.sc_Image.from_filepath("images/stones.jpg")
-# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("images/stones_shrank.jpg")
-
-#shrinking giza by 120 pixels
-
-# im = image.sc_Image.from_filepath("images/giza.jpg")
-# im.shrink(120,orientation = 'vertical', energy = 'kroon', alg = 'dyn')
-# im.to_jpeg("images/giza_shrank.jpg")
-
-#displays the energy maps for giza
-# im = image.sc_Image.from_filepath("images/giza.jpg")
-# im.to_energy_pic('images/energy_map_entropy.jpg', 'entropy')
-
-# im.to_energy_pic('images/energy_map_sobel.jpg', 'sobel')
-# im.to_energy_pic('images/energy_map_kroon.jpg', 'kroon')
-# im.to_energy_pic('images/energy_map_sobel5.jpg', 'sobel5')
-# im.to_energy_pic('images/energy_map_scharr5.jpg', 'scharr5')
-
+#Seam Pictures
+#==================#
 
 #displays seams created by entropy
-im = image.sc_Image.from_filepath("images/giza.jpg")
-im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
+# im = image.sc_Image.from_filepath("images/giza.jpg")
+# im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
 
 # #displays seams created by sobel
 # im = image.sc_Image.from_filepath("images/giza.jpg")
@@ -156,11 +156,19 @@ im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
 # im = image.sc_Image.from_filepath("images/giza.jpg")
 # im.to_seam_pic("images/scharr5.jpg",80, energy = 'scharr5')
 
-# Object enlarement on the sun
+
+#Object enlargement
+#==================#
+
+# object enlargement on the sun
 
 # im = image.sc_Image.from_filepath("images/sunset.jpeg")
 # im.enlarge_object_1d(40, orientation = 'horizontal')
 # im.enlarge_object_1d(40, orientation = 'vertical')
 # im.to_jpeg("images/big_sunset.jpg")
+
+# im = image.sc_Image.from_filepath("images/skateboarder.jpg")
+# im.enlarge_object_1d(40)
+# im.to_jpeg("images/skateboarder_1D_enlarged.jpg")
 
 

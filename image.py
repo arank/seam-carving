@@ -230,6 +230,7 @@ class sc_Image:
 
     #END OF PUBLIC METHODS
 
+
     # gets neigbors to pixel at given position in image in form of pixle list
     def get_neighbors_simple (self, pos, pixels):
 
