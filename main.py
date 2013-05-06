@@ -44,10 +44,10 @@ import image
 #Image Shrinking
 #==================#
 
-# Shrinks giza by 120 pixels in the vertical direciton by removing horizontal seams
+# Shrinks night by 120 pixels in the vertical direciton by removing horizontal seams
 
 # im = image.sc_Image.from_filepath("images/night.jpg")
-# im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
+# im.shrink(120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
 # im.to_jpeg("images/night_shrank.jpg")
 
 
@@ -105,8 +105,6 @@ import image
 # im.to_jpeg("images/red_plane_enlarged.jpg")
 
 
-
-
 #Object removal
 #==================#
 
@@ -124,21 +122,15 @@ import image
 # im.to_jpeg("images/dolphin_object_removed.jpg")
 
 
-#displays seams found by dijkstra's algorithm
-# im = image.sc_Image.from_filepath("images/landscape.jpg")
-# im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dijk')
+# Removes the colored-in dolphin from the sunset image
 
-#displays seams found by dynamic programming
-# im = image.sc_Image.from_filepath("images/landscape.jpg")
-# im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dyn')
+# im = image.sc_Image.from_filepath("images/sunset_to_remove.jpg")
+# im.remove_object((35, 255, 9), 5)
+# im.to_jpeg("images/sunset_object_removed.jpg")
 
 
 #Seam Pictures
 #==================#
-
-#displays seams created by entropy
-# im = image.sc_Image.from_filepath("images/giza.jpg")
-# im.to_energy_pic("images/giza_entropy_map.jpg", 'entropy')
 
 # #displays seams created by sobel
 # im = image.sc_Image.from_filepath("images/giza.jpg")
@@ -156,6 +148,17 @@ import image
 # im = image.sc_Image.from_filepath("images/giza.jpg")
 # im.to_seam_pic("images/scharr5.jpg",80, energy = 'scharr5')
 
+#horiztonal seam picture for night
+# im = image.sc_Image.from_filepath("images/night.jpg")
+# im.to_seam_pic("images/night_seams.jpg", 120,orientation = 'horizontal', energy = 'scharr', alg = 'dyn')
+
+#displays seams found by dijkstra's algorithm
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.to_seam_pic("images/dijk_seams.jpg",10, energy = 'sobel', alg = 'dijk')
+
+#displays seams found by dynamic programming
+# im = image.sc_Image.from_filepath("images/landscape.jpg")
+# im.to_seam_pic("images/dyn_seams.jpg",10, energy = 'sobel', alg = 'dyn')
 
 #Object enlargement
 #==================#

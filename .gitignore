@@ -47,3 +47,5 @@ old_energy_landscape.jpg
 *.mov
 
 video/.DS_Store
+
+.DS_Store
