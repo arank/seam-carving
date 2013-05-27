@@ -18,7 +18,6 @@ import image
 
 # Usage examples:
 
-
 #Energy Maps
 #==================#
 
