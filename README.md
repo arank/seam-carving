@@ -1,6 +1,8 @@
 seam-carving
 Seam Carving (CS51 Project)
 
+By: Aran Khanna, Andrew Maubossin, Sergui Balanovich
+
 Dependency: Python Imaging Library (PIL)
 
 A Python library to perform content-aware image resizing methods like image scaling and object removal using seam carving. Check out the images folder for some examples.
